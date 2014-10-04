@@ -1,0 +1,4 @@
+package teamo;
+
+class Culture {
+}
