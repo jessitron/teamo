@@ -1,4 +1,6 @@
-package teamo;
+package teamo
 
 class Team {
 }
+
+class Coder{}
