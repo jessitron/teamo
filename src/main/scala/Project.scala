@@ -10,3 +10,7 @@ class Project(val size: Double = 40.0, val difficulty:Double = 1.0)
 case class Code(functionality:Double, debt:Double){
   def addWork(coder:Coder, culture:Culture, time:FiniteDuration):Code = this
 }
+
+class Task
+
+class Work(val coder:Coder,val culture:Culture,val time:FiniteDuration)
