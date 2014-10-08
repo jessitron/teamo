@@ -9,7 +9,7 @@ import scala.concurrent.duration._
 class SomeSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matchers {
 
   def simulate(t: Team, p: Project, c: Culture, d: FiniteDuration) = {
-   Results(3*c.slack)
+   Simulation.run(t,p,c,d);
   }
 
   def moreSlack(culture: Culture) = culture.copy(slack = culture.slack + 0.05)
