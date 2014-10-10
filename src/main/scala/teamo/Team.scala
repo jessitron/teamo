@@ -7,6 +7,6 @@ class Coder{
   def workOnTask(task:Task) : Work = ???
 }
 
-class ProjectManager(val project:Project){
+class ProjectManager(val teamo:TeaMo){
   def createTask :Task = ???
 }
