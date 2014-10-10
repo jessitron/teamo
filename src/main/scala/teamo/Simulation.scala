@@ -5,9 +5,10 @@ import akka.actor._
 
 object Simulation {
 
-  def run(t: Team, p: TeaMo, c: Culture, d: FiniteDuration) = {
+  def run(t: Team, c: Culture, d: FiniteDuration) = {
 
     val system = ActorSystem("teamo")
+    val teamo = system.actorOf(Props[TeaMo])
     system.shutdown()
     Results (3 * c.slack)
   }
