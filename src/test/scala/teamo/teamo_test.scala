@@ -16,7 +16,7 @@ class SomeSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matchers
 
   test("after a while, the team with more slack is more productive") {
     forAll (TeamGen(),
-      Gen.const(new Culture))
+      CultureGen())
       { (team : Team, culture: Culture) =>
       val aWhile = 90.days
       val results = simulate(team, culture, aWhile)

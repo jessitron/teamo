@@ -1,6 +1,7 @@
 package teamo
 
 import akka.actor.Actor
+import teamo.TeaMo.{TeaMoValue, GetValue}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -16,10 +17,24 @@ class TeaMo extends Actor{
   
   def receive:Receive= {
     case w:Work => addWork(w)
+    case GetValue => sender ! calculateValue
   }
   
-  def addWork(w:Work) ={}
+  def calculateValue = {
+    TeaMoValue(size-debt)
+  }
+  //this is horrific, but without a model we need something
+  def addWork(w:Work) ={
+     val workSize = w.time.toMinutes
+     size += workSize
+     debt += workSize/(1+w.culture.slack)
+  }
 
+}
+
+object TeaMo{
+  case object GetValue
+  case class TeaMoValue(value:Double)
 }
 
 class Task
