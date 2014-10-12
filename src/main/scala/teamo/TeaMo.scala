@@ -37,7 +37,7 @@ class TeaMo extends Actor {
      // a fold over each set. But for now, ultra-simple.
      TeaMoValue(
        features.map(_.valueAdd).sum *
-       problems.map(_.impact).map(1-_).reduce(_*_))
+       problems.map(_.impact).map(1-_).foldLeft(1.0)(_*_))
   }
 }
 

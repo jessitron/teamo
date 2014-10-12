@@ -15,3 +15,15 @@ object CultureGen{
     for(d<-Gen.choose(0.0,2.0)) yield Culture(d)
   }
 }
+
+object FeatureGen {
+  def apply():Gen[Feature] = {
+    for(d<-Gen.choose(1.0,100.0)) yield Feature(d)
+  }
+}
+
+object FeaturesGen{
+  def apply():Gen[Set[Feature]] = {
+   Gen.containerOf[Set,Feature](FeatureGen())
+  }
+}
