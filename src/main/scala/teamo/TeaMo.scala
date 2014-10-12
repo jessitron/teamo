@@ -15,7 +15,7 @@ case class Work(startTime: FiniteDuration = 0.millis,
 case class Difficulty(points: Double)
 
 /* reference equality is important here */
-class Problem(difficulty: Difficulty,
+case class Problem(difficulty: Difficulty,
   /* percentage of functionality killed */
   impact: Double)
 
@@ -39,13 +39,6 @@ class TeaMo extends Actor {
        features.map(_.valueAdd).sum *
        problems.map(_.impact).map(1-_).reduce(_*_))
   }
-  //this is horrific, but without a model we need something
-  def addWork(w:Work) ={
-     val workSize = w.time.toMinutes
-     size += workSize
-     debt += workSize/(1+w.culture.slack)
-  }
-
 }
 
 object TeaMo{
