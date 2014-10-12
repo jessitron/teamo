@@ -12,18 +12,32 @@ case class Work(startTime: FiniteDuration = 0.millis,
                 culture:Culture,
                 time:FiniteDuration)
 
-class TeaMo extends Actor{
-  
-  var size = 0.0
-  var debt = 0.0
-  
+case class Difficulty(points: Double)
+
+/* reference equality is important here */
+class Problem(difficulty: Difficulty,
+  /* percentage of functionality killed */
+  impact: Double)
+
+case class Feature(valueAdd: Double)
+
+class TeaMo extends Actor {
+
+  var features: Set[Feature] = Set()
+  var problems: Set[Problem] = Set()
+
   def receive:Receive= {
-    case w:Work => addWork(w)
+    case w:Feature => features = features + w
     case GetValue => sender ! calculateValue
   }
-  
+
+  // This should be an integral over time.
   def calculateValue = {
-    TeaMoValue(size-debt)
+     // this could be a lot more complicated, it should be
+     // a fold over each set. But for now, ultra-simple.
+     TeaMoValue(
+       features.map(_.valueAdd).sum *
+       problems.map(_.impact).map(1-_).reduce(_*_))
   }
   //this is horrific, but without a model we need something
   def addWork(w:Work) ={
@@ -37,6 +51,7 @@ class TeaMo extends Actor{
 object TeaMo{
   case object GetValue
   case class TeaMoValue(value:Double)
+
 }
 
 class Task

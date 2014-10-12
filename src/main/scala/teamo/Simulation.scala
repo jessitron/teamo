@@ -15,12 +15,15 @@ object Simulation {
     implicit val timeout:Timeout = 3.seconds
     val system = ActorSystem("teamo")
     val teamo = system.actorOf(Props[TeaMo])
+
     val timeKeeper = system.actorOf(Props(new TimeKeeper(d,teamo)))
     timeKeeper ! Work(0.millis,new Coder,c,d)
     val valueFuture = timeKeeper ? GetValue
-    val value = blocking {
-      Await.result(valueFuture, 3.seconds).asInstanceOf[TeaMoValue]
-    }
+
+    // thinking about: passing Future out of here, waiting in test
+    // Someday maybe the test frameworks will support proper async
+    val value = Await.result(valueFuture, 3.seconds).asInstanceOf[TeaMoValue]
+
     system.shutdown()
     Results (value.value)
   }
