@@ -17,7 +17,9 @@ case class Difficulty(points: Double)
 /* reference equality is important here */
 class Problem(val difficulty: Difficulty,
   /* percentage of functionality killed */
-  val impact: Double)
+  val impact: Double){
+  override def toString = { s"Problem{$difficulty,$impact)"}
+}
 
 case class Feature(valueAdd: Double)
 
