@@ -21,7 +21,7 @@ class Problem(val difficulty: Difficulty,
   override def toString = { s"Problem{$difficulty,$impact)"}
 }
 
-case class Feature(valueAdd: Double)
+case class Feature(valueAdd: Double, difficulty:Difficulty)
 
 class TeaMo extends Actor {
 

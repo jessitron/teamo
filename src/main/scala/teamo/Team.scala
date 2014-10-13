@@ -1,6 +1,12 @@
 package teamo
 
-import SkillSet.SkillLevel // does this work? Why does this work?
+import java.time.Duration
+
+import SkillSet.SkillLevel
+import akka.actor.Actor
+import teamo.ProjectManager.{Idle, Finished}
+
+// does this work? Why does this work?
 
 class Team {
 
@@ -13,7 +19,7 @@ case class SkillSet(
    def addExperience(feature: Feature,
      slack: Double): SkillSet = {
      // here is a function.
-     val codebaseGain = feature.difficulty * (0.01 + slack)
+     val codebaseGain = feature.difficulty.points * (0.01 + slack)
      // Features could also have tech, someday.
      copy(codebase = codebase + codebaseGain)
    }
@@ -29,19 +35,22 @@ object SkillSet {
 // but the essential thing is that working on a task doesn't only get that task done.
 
 class Coder(manager: ProjectManager, teamo: TeaMo, culture: Culture) extends Actor {
-  var currentTask: Stack[Feature] = Stack(petProject); // pet project is never finished (property)
+  //Scala doesnt want us to use their stack lass, and since List is a linked list...
+  type Stack[T] = List[T]
+
+  var currentTask: Stack[Feature] = List(petProject) // pet project is never finished (property)
     // feature and problem need a common superclass of Task?
-  var workingSince: Date = new Date();
-  var finishment: Option[Cancellable] = None;
+  var workingSince: Date = new Date()
+  var finishment: Option[Cancellable] = None
 
   var skillSet = SkillSet.starting // could be random
 
   // here's what I want:
   def receive = {
-    case Finished => reapBenefits(currentTask.peek);
-                    teamo ! currentTask.pop;  // Missing: quality level of feature
-                    if (currentTask.peek.isPetProject) manager ! Idle else rescheduleFinishment()
-    case t: Feature => currentTask.push(t); rescheduleFinishment()
+    case Finished => reapBenefits(currentTask.head)
+                    teamo ! currentTask.tail;  // Missing: quality level of feature
+                    if (currentTask.head == petProject) manager ! Idle else rescheduleFinishment()
+    case t: Feature => t::currentTask; rescheduleFinishment()
   }
 
   def reapBenefits(task: Feature) = {
@@ -75,4 +84,9 @@ class Coder(manager: ProjectManager, teamo: TeaMo, culture: Culture) extends Act
 
 class ProjectManager(val teamo:TeaMo) {
   def createTask :Task = ???
+}
+
+object ProjectManager{
+  case object Idle
+  case object Finished
 }
