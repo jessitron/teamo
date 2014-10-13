@@ -17,6 +17,7 @@ object Simulation {
     val teamo = system.actorOf(Props[TeaMo])
 
     val timeKeeper = system.actorOf(Props(new TimeKeeper(d,teamo)))
+    
     timeKeeper ! Work(0.millis,new Coder,c,d)
     val valueFuture = timeKeeper ? GetValue
 

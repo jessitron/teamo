@@ -1,11 +1,12 @@
 package teamo
 
-import java.time.Duration
+import java.util.Date
 
 import SkillSet.SkillLevel
-import akka.actor.Actor
+import akka.actor.{ActorRef, Cancellable, Actor}
 import teamo.ProjectManager.{Idle, Finished}
 
+import scala.concurrent.duration._ 
 // does this work? Why does this work?
 
 class Team {
@@ -34,7 +35,7 @@ object SkillSet {
 
 // but the essential thing is that working on a task doesn't only get that task done.
 
-class Coder(manager: ProjectManager, teamo: TeaMo, culture: Culture) extends Actor {
+class Coder(manager: ActorRef, teamo: ActorRef, culture: Culture) extends Actor {
   //Scala doesnt want us to use their stack lass, and since List is a linked list...
   type Stack[T] = List[T]
 
@@ -59,12 +60,15 @@ class Coder(manager: ProjectManager, teamo: TeaMo, culture: Culture) extends Act
 
   def onPetProject: Boolean = currentTask.size <= 1
 
+  def howLongWillThisTake(feature: Feature):FiniteDuration = ??? 
+
   // in this version, there is no % complete. Every task starts over. Not ideal - closer to
   // reality than ignoring cost of context switching and merging though
   def rescheduleFinishment() {
-    finishment.map(_.cancel)
-    val t = howLongWillThisTake(currentTask.peek)
-    finishment = Some(scheduler.scheduleOnce(t, self, Finished))
+    implicit val executionContext = context.system.dispatcher
+    finishment.map(_.cancel())
+    val t = howLongWillThisTake(currentTask.head)
+    finishment = Some(context.system.scheduler.scheduleOnce(t, self, Finished))
   }
 
   def petProject: Feature = ??? // some % learning, varies by coder
@@ -72,18 +76,20 @@ class Coder(manager: ProjectManager, teamo: TeaMo, culture: Culture) extends Act
   // Is probably rejected by management
 
   def howLongWillThisTakeMe(task: Feature): Duration = {
-    if (onPetProject) { Duration.forever }
+    if (onPetProject) { Duration.Undefined }
     else {
       // scale the difficulty of the task into realtime
       // increase based on slack
       // decrease based on skill level
+      2.seconds
     }
   }
 
 }
 
-class ProjectManager(val teamo:TeaMo) {
+class ProjectManager(val teamo:TeaMo) extends Actor {
   def createTask :Task = ???
+  def receive:Receive = ??? 
 }
 
 object ProjectManager{
