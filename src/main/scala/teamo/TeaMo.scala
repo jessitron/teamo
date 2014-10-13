@@ -15,9 +15,9 @@ case class Work(startTime: FiniteDuration = 0.millis,
 case class Difficulty(points: Double)
 
 /* reference equality is important here */
-case class Problem(difficulty: Difficulty,
+class Problem(val difficulty: Difficulty,
   /* percentage of functionality killed */
-  impact: Double)
+  val impact: Double)
 
 case class Feature(valueAdd: Double)
 
