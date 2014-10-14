@@ -88,8 +88,11 @@ class Coder(manager: ActorRef, teamo: ActorRef, culture: Culture) extends Actor 
 }
 
 class ProjectManager(val teamo:TeaMo) extends Actor {
-  def createTask :Task = ???
-  def receive:Receive = ??? 
+  def receive:Receive = {
+    case Idle => comeUpWithSomeWorkFor(sender())
+  } 
+  
+  def comeUpWithSomeWorkFor(coder: ActorRef) = {}
 }
 
 object ProjectManager{
