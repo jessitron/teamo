@@ -93,21 +93,10 @@ class Coder(manager: ActorRef, teamo: ActorRef, culture: Culture) extends Actor 
       // increase based on slack
       // decrease based on skill level
       // increase for lower codebase quality
-      2.seconds
+     val distribution = FeatureDurationGetter.howLongWillThisTake(task, skillSet, codeBase /*agent needs passed in */, culture.slack)
+     Timing.scale(distribution.get)
     }
   }
 
 }
 
-class ProjectManager(val teamo:TeaMo) extends Actor {
-  def receive:Receive = {
-    case Idle => comeUpWithSomeWorkFor(sender())
-  }
-
-  def comeUpWithSomeWorkFor(coder: ActorRef) = {}
-}
-
-object ProjectManager{
-  case object Idle
-  case object Finished
-}

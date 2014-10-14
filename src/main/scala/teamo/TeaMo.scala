@@ -37,7 +37,7 @@ class TeaMo extends Actor {
 }
 
 object TeaMo{
-  case object GetValue
+    case object GetValue
   case class TeaMoValue(value:Double)
 
 }
