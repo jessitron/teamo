@@ -6,10 +6,21 @@ import SkillSet.SkillLevel
 import akka.actor.{ActorRef, Cancellable, Actor}
 import teamo.ProjectManager.{Idle, Finished}
 
-import scala.concurrent.duration._ 
+import scala.concurrent.duration._
 // does this work? Why does this work?
 
-class Team {
+// someday: randomly generate starting skillsets etc of members
+class Team(culture: Culture, membersCount: Int, teamo: ActorRef, butt: () => Feature) extends Actor {
+
+  override def onStart {
+     // create team members. This is the manager
+  }
+
+  def receive = {
+    case Idle => sender ! pullFeatureOutOfButt()
+  }
+
+  def pullFeatureOutOfButt(): Feature = butt()
 
 }
 
@@ -60,7 +71,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, culture: Culture) extends Actor 
 
   def onPetProject: Boolean = currentTask.size <= 1
 
-  def howLongWillThisTake(feature: Feature):FiniteDuration = ??? 
+  def howLongWillThisTake(feature: Feature):FiniteDuration = ???
 
   // in this version, there is no % complete. Every task starts over. Not ideal - closer to
   // reality than ignoring cost of context switching and merging though
@@ -81,6 +92,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, culture: Culture) extends Actor 
       // scale the difficulty of the task into realtime
       // increase based on slack
       // decrease based on skill level
+      // increase for lower codebase quality
       2.seconds
     }
   }
@@ -90,8 +102,8 @@ class Coder(manager: ActorRef, teamo: ActorRef, culture: Culture) extends Actor 
 class ProjectManager(val teamo:TeaMo) extends Actor {
   def receive:Receive = {
     case Idle => comeUpWithSomeWorkFor(sender())
-  } 
-  
+  }
+
   def comeUpWithSomeWorkFor(coder: ActorRef) = {}
 }
 
