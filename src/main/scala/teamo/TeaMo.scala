@@ -4,13 +4,6 @@ import akka.actor.Actor
 import teamo.TeaMo.{TeaMoValue, GetValue}
 
 import scala.concurrent.duration._
-//this difficulty probably becomes something more complicated later
-//as different techs provide different difficulty challenges
-
-case class Work(startTime: FiniteDuration = 0.millis,
-                coder:Coder,
-                culture:Culture,
-                time:FiniteDuration)
 
 case class Difficulty(points: Double)
 

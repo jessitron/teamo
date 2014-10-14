@@ -16,10 +16,10 @@ object Simulation {
     val system = ActorSystem("teamo")
     val teamo = system.actorOf(Props[TeaMo])
 
-    val timeKeeper = system.actorOf(Props(new TimeKeeper(d,teamo)))
-    
-    timeKeeper ! Work(0.millis,new Coder,c,d)
-    val valueFuture = timeKeeper ? GetValue
+    //val timeKeeper = system.actorOf(Props(new TimeKeeper(d,teamo)))
+    teamo ! Feature(c.slack,Difficulty(1))
+    //timeKeeper ! Work(0.millis,new Coder,c,d)
+    val valueFuture = teamo ? GetValue
 
     // thinking about: passing Future out of here, waiting in test
     // Someday maybe the test frameworks will support proper async
@@ -32,7 +32,7 @@ object Simulation {
 //this actor could hold the messages for a while, or do its own tracking of start times, if we wanted to
 class TimeKeeper(max:FiniteDuration,teamo:ActorRef) extends Actor{
   def receive:Receive = {
-    case w:Work => if (w.startTime + w.time <= max) teamo.forward(w)
+   // case w:Work => if (w.startTime + w.time <= max) teamo.forward(w)
     case x =>teamo.forward(x)
   }
 }
