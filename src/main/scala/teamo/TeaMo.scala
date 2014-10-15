@@ -16,6 +16,9 @@ class Problem(val difficulty: Difficulty,
 
 case class Feature(valueAdd: Double, difficulty:Difficulty)
 
+case class CodeBase(quality: CodeQuality)
+
+// needs to receive codebase agent
 class TeaMo extends Actor {
 
   var features: Set[Feature] = Set()

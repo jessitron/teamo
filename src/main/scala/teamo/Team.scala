@@ -4,14 +4,15 @@ import java.util.Date
 
 import SkillSet.SkillLevel
 import akka.actor.{ActorRef, Cancellable, Actor}
+import akka.agent.Agent
 
 import scala.concurrent.duration._
 // does this work? Why does this work?
 
+case class TeamNature(culture: Culture, membersCount: Int, butt: () => Feature)
+
 // someday: randomly generate starting skillsets etc of members
-class Team(culture: Culture, 
-           membersCount: Int,
-           teamo: ActorRef, butt: () => Feature) extends Actor {
+class Team(nature: TeamNature, teamo: ActorRef, codebase: Agent[CodeBase]) extends Actor {
 
   override def preStart {
      // create team members. This is the manager
@@ -21,7 +22,7 @@ class Team(culture: Culture,
     case Idle => sender ! pullFeatureOutOfButt()
   }
 
-  def pullFeatureOutOfButt(): Feature = butt()
+  def pullFeatureOutOfButt(): Feature = nature.butt()
 
 }
 
@@ -29,7 +30,7 @@ case object Idle
 case object Finished
 
 case class SkillSet(
-  codebase: SkillLevel // you know what Clojure gets 100% right? commas as whitespace.
+  codebaseFamiliarity: SkillLevel // you know what Clojure gets 100% right? commas as whitespace.
 //  , techs: Map[Tech, SkillLevel]
 ) {
    def addExperience(feature: Feature,
@@ -37,7 +38,7 @@ case class SkillSet(
      // here is a function.
      val codebaseGain = feature.difficulty.points * (0.01 + slack)
      // Features could also have tech, someday.
-     copy(codebase = codebase + codebaseGain)
+     copy(codebaseFamiliarity = codebaseFamiliarity + codebaseGain)
    }
 
 }
@@ -50,7 +51,7 @@ object SkillSet {
 
 // but the essential thing is that working on a task doesn't only get that task done.
 
-class Coder(manager: ActorRef, teamo: ActorRef, culture: Culture) extends Actor {
+class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], culture: Culture) extends Actor {
   //Scala doesnt want us to use their stack lass, and since List is a linked list...
   type Stack[T] = List[T]
 
@@ -97,8 +98,11 @@ class Coder(manager: ActorRef, teamo: ActorRef, culture: Culture) extends Actor 
       // increase based on slack
       // decrease based on skill level
       // increase for lower codebase quality
-     val distribution = FeatureDurationGuesser.howLongWillThisTake(task, skillSet, codeBase /*agent needs passed in */, culture.slack)
-     Timing.scale(distribution.get)
+     val distribution = FeatureDurationGuesser.howLongWillThisTake(task,
+       skillSet,
+       codebase().quality,
+       culture.slack)
+     Timing.scale(distribution.sample(1).head)
     }
   }
 

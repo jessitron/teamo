@@ -7,17 +7,27 @@ import scala.collection.mutable
 import scala.concurrent._
 import scala.concurrent.duration._
 import akka.actor._
+import akka.agent.Agent
 import akka.pattern._
 object Simulation {
 
-  def run(t: Team, c: Culture, d: FiniteDuration) = {
+  def run(t: TeamNature, d: FiniteDuration) = {
    import ExecutionContext.Implicits.global
     implicit val timeout:Timeout = 3.seconds
     val system = ActorSystem("teamo")
+
+    /* GIT INIT */
+    val codebase = Agent(CodeBase(1))
+
+    /* TEAMO */
     val teamo = system.actorOf(Props[TeaMo])
 
+    /* HIRE */
+    val developmentTeam = system.actorOf(Props(new Team(t, teamo, codebase)))
+
     //val timeKeeper = system.actorOf(Props(new TimeKeeper(d,teamo)))
-    teamo ! Feature(c.slack,Difficulty(1))
+
+    Timing.wait(d)
     //timeKeeper ! Work(0.millis,new Coder,c,d)
     val valueFuture = teamo ? GetValue
 

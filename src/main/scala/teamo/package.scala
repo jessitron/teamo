@@ -3,6 +3,7 @@ import scala.concurrent.duration._
 package object teamo {
 
   type Slack = Double
+  type CodeQuality = Double
 
    val timeRatio:Double = 1.second / 1.day
 
@@ -10,6 +11,11 @@ package object teamo {
    object Timing {
       def scale(calendarTime: Duration): Duration = {
          calendarTime * timeRatio
+      }
+      def wait(calendarTime: Duration) {
+        scala.concurrent.blocking {
+          Thread.sleep(scale(calendarTime).toMillis)
+        }
       }
    }
 
