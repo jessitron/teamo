@@ -10,6 +10,7 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 class ModelSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matchers {
 
   import FeatureDurationGuesser._
+  import teamo.Implicits._
 
   /* freakin A, how do I provide this conversion as evidence? */
   implicit def weLikeMilliseconds(d: Duration):Double = d.toMillis

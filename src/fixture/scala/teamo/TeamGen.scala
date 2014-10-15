@@ -2,6 +2,7 @@ package teamo
 
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
+import org.scalacheck.Arbitrary
 
 
 object TeamNatureGen{
@@ -33,4 +34,16 @@ object FeaturesGen{
   def apply():Gen[Set[Feature]] = {
    Gen.containerOf[Set,Feature](FeatureGen())
   }
+}
+
+object SkillSetGen {
+  def apply() : Gen[SkillSet] = {
+     Gen.choose(0.0,1.0) map (SkillSet(_))
+  }
+}
+
+object Implicits {
+
+  implicit val arbDiff: Arbitrary[Difficulty] = Arbitrary(DifficultyGen())
+  implicit val b: Arbitrary[SkillSet] = Arbitrary(SkillSetGen())
 }
