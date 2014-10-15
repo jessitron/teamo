@@ -4,15 +4,16 @@ import java.util.Date
 
 import SkillSet.SkillLevel
 import akka.actor.{ActorRef, Cancellable, Actor}
-import teamo.ProjectManager.{Idle, Finished}
 
 import scala.concurrent.duration._
 // does this work? Why does this work?
 
 // someday: randomly generate starting skillsets etc of members
-class Team(culture: Culture, membersCount: Int, teamo: ActorRef, butt: () => Feature) extends Actor {
+class Team(culture: Culture, 
+           membersCount: Int,
+           teamo: ActorRef, butt: () => Feature) extends Actor {
 
-  override def onStart {
+  override def preStart {
      // create team members. This is the manager
   }
 
@@ -23,6 +24,8 @@ class Team(culture: Culture, membersCount: Int, teamo: ActorRef, butt: () => Fea
   def pullFeatureOutOfButt(): Feature = butt()
 
 }
+
+case object Idle
 
 case class SkillSet(
   codebase: SkillLevel // you know what Clojure gets 100% right? commas as whitespace.

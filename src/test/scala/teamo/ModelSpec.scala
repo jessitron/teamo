@@ -1,6 +1,8 @@
 package teamo;
 
 import org.scalacheck._
+import org.scalatest.{Matchers, FunSuite}
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 class ModelSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matchers {
 
