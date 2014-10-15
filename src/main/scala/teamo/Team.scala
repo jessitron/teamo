@@ -3,7 +3,7 @@ package teamo
 import java.util.Date
 
 import SkillSet.SkillLevel
-import akka.actor.{ActorRef, Cancellable, Actor}
+import akka.actor.{Props, ActorRef, Cancellable, Actor}
 import akka.agent.Agent
 
 import scala.concurrent.duration._
@@ -14,8 +14,16 @@ case class TeamNature(culture: Culture, membersCount: Int, butt: () => Feature)
 // someday: randomly generate starting skillsets etc of members
 class Team(nature: TeamNature, teamo: ActorRef, codebase: Agent[CodeBase]) extends Actor {
 
+  var teamMembers: Seq[ActorRef] = Seq()
+  
   override def preStart {
-     // create team members. This is the manager
+   
+    val newTeamMembers =  for(i<-0.to(nature.membersCount)) yield
+      context.system.actorOf(Props(new Coder(self,teamo,codebase,nature.culture)))
+    
+    teamMembers++newTeamMembers
+    
+    newTeamMembers.foreach(x => x ! pullFeatureOutOfButt())
   }
 
   def receive = {
@@ -55,7 +63,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
   //Scala doesnt want us to use their stack lass, and since List is a linked list...
   type Stack[T] = List[T]
 
-  var currentTask: Stack[Feature] = List(petProject) // pet project is never finished (property)
+  var currentTask: Stack[Feature] = List()//List(petProject) // pet project is never finished (property)
     // feature and problem need a common superclass of Task?
   var workingSince: Date = new Date()
   var finishment: Option[Cancellable] = None
@@ -67,7 +75,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
     case Finished => reapBenefits(currentTask.head)
                     teamo ! currentTask.tail;  // Missing: quality level of feature
                     if (currentTask.head == petProject) manager ! Idle else rescheduleFinishment()
-    case t: Feature => t::currentTask; rescheduleFinishment()
+    case t: Feature => currentTask= t::currentTask; rescheduleFinishment()
   }
 
   def reapBenefits(task: Feature) = {
