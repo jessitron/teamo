@@ -4,11 +4,11 @@ package object teamo {
 
   type Slack = Double
 
-   val timeRatio = 1.second / 1.day
+   val timeRatio:Double = 1.second / 1.day
 
   // put in own file?
    object Timing {
-      def scale(calendarTime: FiniteDuration): FiniteDuration = {
+      def scale(calendarTime: Duration): Duration = {
          calendarTime * timeRatio
       }
    }

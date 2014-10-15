@@ -96,7 +96,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, culture: Culture) extends Actor 
       // increase based on slack
       // decrease based on skill level
       // increase for lower codebase quality
-     val distribution = FeatureDurationGetter.howLongWillThisTake(task, skillSet, codeBase /*agent needs passed in */, culture.slack)
+     val distribution = FeatureDurationGuesser.howLongWillThisTake(task, skillSet, codeBase /*agent needs passed in */, culture.slack)
      Timing.scale(distribution.get)
     }
   }
