@@ -1,5 +1,7 @@
 package teamo;
 
+import probability_monad.Distribution
+import scala.concurrent.duration._
 import org.scalacheck._
 import org.scalacheck.Prop._
 import org.scalatest.{Matchers, FunSuite}
@@ -8,6 +10,8 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 class ModelSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matchers {
 
   import FeatureDurationGuesser._
+
+  implicit def weLikeMilliseconds(d: Duration):Double = d.toMillis
 
   test("expected duration and variance increase with task difficulty") {
     forAll() {
@@ -18,12 +22,12 @@ class ModelSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matcher
            val higherDifficulty = p1
            val lowerDifficulty = p2
 
-          val higherDifficultyDistribution =
+          val higherDifficultyDistribution: Distribution[Duration] =
              howLongWillThisTake( higherDifficulty,
                 skillSet, code, slack)
 
 
-          val lowerDifficultyDistribution =
+          val lowerDifficultyDistribution: Distribution[Duration] =
              howLongWillThisTake( lowerDifficulty,
                 skillSet, code, slack)
 
