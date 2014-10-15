@@ -26,6 +26,7 @@ class Team(culture: Culture,
 }
 
 case object Idle
+case object Finished
 
 case class SkillSet(
   codebase: SkillLevel // you know what Clojure gets 100% right? commas as whitespace.
