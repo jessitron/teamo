@@ -20,7 +20,7 @@ class ModelSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matcher
        (p1: Difficulty, p2: Difficulty,
        skillSet: SkillSet, code: CodeQuality, slack: Slack) =>
          /* this can fail intermittently for values of p1 and p2 very near each other */
-        (p1.points > p2.points) ==> {
+        whenever(p1.points > p2.points) {
            val higherDifficulty = p1
            val lowerDifficulty = p2
 
