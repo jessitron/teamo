@@ -11,6 +11,7 @@ class ModelSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matcher
 
   import FeatureDurationGuesser._
 
+  /* freakin A, how do I provide this conversion as evidence? */
   implicit def weLikeMilliseconds(d: Duration):Double = d.toMillis
 
   test("expected duration and variance increase with task difficulty") {
@@ -22,17 +23,19 @@ class ModelSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matcher
            val higherDifficulty = p1
            val lowerDifficulty = p2
 
-          val higherDifficultyDistribution: Distribution[Duration] =
+          val higherDifficultyDistribution: Distribution[Double] =
              howLongWillThisTake( higherDifficulty,
-                skillSet, code, slack)
+                skillSet, code, slack).map(_.toMillis.toDouble)
 
 
-          val lowerDifficultyDistribution: Distribution[Duration] =
+          val lowerDifficultyDistribution: Distribution[Double] =
              howLongWillThisTake( lowerDifficulty,
-                skillSet, code, slack)
+                skillSet, code, slack).map(_.toMillis.toDouble)
 
           assert(higherDifficultyDistribution.ev > lowerDifficultyDistribution.ev)
           assert(higherDifficultyDistribution.variance > lowerDifficultyDistribution.variance)
+
+          true
 
          }
 
