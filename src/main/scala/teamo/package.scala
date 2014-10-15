@@ -2,8 +2,9 @@ import scala.concurrent.duration._
 
 package object teamo {
 
-  type Slack = Double
-  type CodeQuality = Double
+  type Slack = Double /* between 0 and 1 */
+  type CodeQuality = Double /* between 0 and 1 */
+  type Value = Double /* not limited */
 
    val timeRatio:Double = 1.second / 1.day
 

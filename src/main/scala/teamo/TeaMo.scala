@@ -14,7 +14,7 @@ class Problem(val difficulty: Difficulty,
   override def toString = { s"Problem{$difficulty,$impact)"}
 }
 
-case class Feature(valueAdd: Double, difficulty:Difficulty)
+case class Feature(valueAdd: Value, difficulty:Difficulty)
 
 case class CodeBase(quality: CodeQuality)
 
