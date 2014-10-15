@@ -3,6 +3,14 @@ package teamo
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
 
+
+object TeamNatureGen{
+  def apply(): Gen[TeamNature] = {
+    for(d<-Gen.choose(1,5);
+       c<-CultureGen()) yield TeamNature(c,d,()=>FeatureGen().sample.get)
+  }
+}
+
 object CultureGen{
   def apply(): Gen[Culture] = {
     for(d<-Gen.choose(0.0,2.0)) yield Culture(d)

@@ -6,16 +6,16 @@ import scala.concurrent.duration._
 
 class SomeSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matchers {
 
-  def simulate(t: Team, c: Culture, d: FiniteDuration) = {
-   Simulation.run(t,c,d)
+  def simulate(t: TeamNature, d: FiniteDuration) = {
+   Simulation.run(t,d)
   }
 
   def moreSlack(culture: Culture) = culture.copy(slack = culture.slack + 0.05)
 
   test("after a while, the team with more slack is more productive") {
-    forAll (TeamGen(),
+    forAll (TeamNatureGen(),
       CultureGen())
-      { (team : Team, culture: Culture) =>
+      { (team : TeamNature, culture: Culture) =>
       val aWhile = 90.days
       val results = simulate(team, culture, aWhile)
       val resultsWithMoreSlack = simulate(team, moreSlack(culture), aWhile)
