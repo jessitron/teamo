@@ -73,8 +73,9 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
   // here's what I want:
   def receive = {
     case Finished => reapBenefits(currentTask.head)
-                    teamo ! currentTask.tail;  // Missing: quality level of feature
-                    if (currentTask.head == petProject) manager ! Idle else rescheduleFinishment()
+                    teamo ! currentTask.head // Missing: quality level of feature
+                    currentTask = currentTask.tail
+                    if (currentTask.isEmpty) manager ! Idle else rescheduleFinishment()
     case t: Feature => currentTask= t::currentTask; rescheduleFinishment()
   }
 
@@ -82,17 +83,19 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
     skillSet = skillSet.addExperience(task, culture.slack)
   }
 
-  def onPetProject: Boolean = currentTask.size <= 1
-
-  def howLongWillThisTake(feature: Feature):FiniteDuration = ???
+  //def onPetProject: Boolean = currentTask.size <= 1
 
   // in this version, there is no % complete. Every task starts over. Not ideal - closer to
   // reality than ignoring cost of context switching and merging though
   def rescheduleFinishment() {
     implicit val executionContext = context.system.dispatcher
     finishment.map(_.cancel())
-    val t = howLongWillThisTake(currentTask.head)
-    finishment = Some(context.system.scheduler.scheduleOnce(t, self, Finished))
+    val t = howLongWillThisTakeMe(currentTask.head)
+    val finiteT = t match {
+      case f:FiniteDuration => f
+      case _ => println("warning, we got an infinite duration"); 20.millis
+    }
+    finishment = Some(context.system.scheduler.scheduleOnce(finiteT, self, Finished))
   }
 
   def petProject: Feature = ??? // some % learning, varies by coder
@@ -100,8 +103,6 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
   // Is probably rejected by management
 
   def howLongWillThisTakeMe(task: Feature): Duration = {
-    if (onPetProject) { Duration.Undefined }
-    else {
       // scale the difficulty of the task into realtime
       // increase based on slack
       // decrease based on skill level
@@ -111,7 +112,6 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
        codebase().quality,
        culture.slack)
      Timing.scale(distribution.sample(1).head)
-    }
   }
 
 }

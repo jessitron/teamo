@@ -3,7 +3,6 @@ package teamo
 import akka.util.Timeout
 import teamo.TeaMo.{TeaMoValue, GetValue}
 
-import scala.collection.mutable
 import scala.concurrent._
 import scala.concurrent.duration._
 import akka.actor._
@@ -24,6 +23,7 @@ object Simulation {
   def run(t: TeamNature, d: FiniteDuration) = {
    import ExecutionContext.Implicits.global
     implicit val timeout:Timeout = 3.seconds
+    println(s"starting simuation: $t $d ")
     val system = ActorSystem("teamo")
 
     /* GIT INIT */
