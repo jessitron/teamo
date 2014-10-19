@@ -13,7 +13,7 @@ object Simulation {
   def main(args: Array[String]) {
     val results = run(TeamNature(Culture(slack = 0.5),
          4,
-         () => Feature(valueAdd = 1, Difficulty(1))
+         () => () => Feature(valueAdd = 1, Difficulty(1))
       ), 10.days)
     println("--------------------------")
     println(results)
@@ -23,7 +23,7 @@ object Simulation {
   def run(t: TeamNature, d: FiniteDuration) = {
    import ExecutionContext.Implicits.global
     implicit val timeout:Timeout = 3.seconds
-    println(s"starting simuation: $t $d ")
+    println(s"starting simulation: $t $d ")
     val system = ActorSystem("teamo")
 
     /* GIT INIT */

@@ -9,20 +9,25 @@ import akka.agent.Agent
 import scala.concurrent.duration._
 // does this work? Why does this work?
 
-case class TeamNature(culture: Culture, membersCount: Int, butt: () => Feature)
+import TeamNature.ButtFactory
+case class TeamNature(culture: Culture, membersCount: Int, featureSupplierFactory: ButtFactory)
+object TeamNature {
+  type ButtFactory = () => () => Feature
+}
 
 // someday: randomly generate starting skillsets etc of members
 class Team(nature: TeamNature, teamo: ActorRef, codebase: Agent[CodeBase]) extends Actor {
 
   var teamMembers: Seq[ActorRef] = Seq()
-  
+  val butt = nature.featureSupplierFactory()
+
   override def preStart {
-   
+
     val newTeamMembers =  for(i<-0.to(nature.membersCount)) yield
       context.system.actorOf(Props(new Coder(self,teamo,codebase,nature.culture)))
-    
+
     teamMembers++newTeamMembers
-    
+
     newTeamMembers.foreach(x => x ! pullFeatureOutOfButt())
   }
 
@@ -30,7 +35,7 @@ class Team(nature: TeamNature, teamo: ActorRef, codebase: Agent[CodeBase]) exten
     case Idle => sender ! pullFeatureOutOfButt()
   }
 
-  def pullFeatureOutOfButt(): Feature = nature.butt()
+  def pullFeatureOutOfButt(): Feature = butt()
 
 }
 

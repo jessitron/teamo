@@ -36,8 +36,6 @@ class ModelSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matcher
           assert(higherDifficultyDistribution.ev > lowerDifficultyDistribution.ev)
           assert(higherDifficultyDistribution.variance > lowerDifficultyDistribution.variance)
 
-          true
-
          }
 
     }

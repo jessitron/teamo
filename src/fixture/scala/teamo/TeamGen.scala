@@ -7,8 +7,24 @@ import org.scalacheck.Arbitrary
 
 object TeamNatureGen{
   def apply(): Gen[TeamNature] = {
-    for(d<-Gen.choose(1,5);
-       c<-CultureGen()) yield TeamNature(c,d,()=>FeatureGen().sample.get)
+    for{d<-Gen.choose(1,5)
+        c<-CultureGen()
+        bf <- ButtFactoryGen()}
+     yield TeamNature(c,d,bf)
+  }
+}
+
+object ButtFactoryGen {
+  import TeamNature.ButtFactory
+  def apply(): Gen[ButtFactory] = {
+    for { features <- nonEmptyContainerOf[Seq,Feature](FeatureGen())}
+    yield new Function0[Function0[Feature]] {
+      override def toString = "implementing: " + features
+      def apply() = new Function0[Feature] {
+      val iter = Stream.continually(features).flatten.iterator
+      def apply : Feature = iter.next()
+    }
+    }
   }
 }
 
@@ -19,7 +35,7 @@ object CultureGen{
 }
 object DifficultyGen{
   def apply(): Gen[Difficulty] = {
-    for(d<-Gen.choose(0.0,10.0)) yield Difficulty(d)
+    for(d<-Gen.choose(0.01,2.0)) yield Difficulty(d)
   }
 }
 
