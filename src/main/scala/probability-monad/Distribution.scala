@@ -13,6 +13,8 @@ trait Distribution[A] {
   self =>
   protected def get: A
 
+  private val N = 10000
+
   override def toString = "<distribution>"
 
   def map[B](f: A => B): Distribution[B] = new Distribution[B] {
@@ -85,7 +87,6 @@ trait Distribution[A] {
     }
   }
 
-  private val N = 10000
 
   def pr(pred: A => Boolean, given: A => Boolean = (a: A) => true, samples: Int = N): Double = {
     1.0 * this.filter(given).sample(samples).count(pred) / samples
