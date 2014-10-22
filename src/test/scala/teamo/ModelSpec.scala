@@ -13,7 +13,20 @@ class ModelSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matcher
   import teamo.Implicits._
 
   /* freakin A, how do I provide this conversion as evidence? */
-  implicit def weLikeMilliseconds(d: Duration):Double = d.toMillis
+  implicit def weLikeMilliseconds(d: Duration):Double = d.toMillis.toDouble
+
+  test("a task never takes forever") {
+     forAll() {
+       (d: Difficulty,
+       skillSet: SkillSet, code: CodeQuality, slack: Slack) =>
+
+          val distribution: Distribution[Duration] =
+             howLongWillThisTake( d, skillSet, code, slack)
+          val some = distribution.sample(100)
+          assert(some.max.isFinite())
+          assert(some.min > 0.seconds)
+     }
+  }
 
   test("expected duration and variance increase with task difficulty") {
     forAll() {

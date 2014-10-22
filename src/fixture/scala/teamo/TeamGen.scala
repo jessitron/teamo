@@ -28,9 +28,15 @@ object ButtFactoryGen {
   }
 }
 
+object SlackGen {
+  def apply(): Gen[Slack] = {
+    for (d <- Gen.choose(0.0, 3.0)) yield Slack(d)
+  }
+}
+
 object CultureGen{
   def apply(): Gen[Culture] = {
-    for(d<-Gen.choose(0.0,2.0)) yield Culture(d)
+    for(d<-SlackGen()) yield Culture(d)
   }
 }
 object DifficultyGen{
@@ -62,4 +68,5 @@ object Implicits {
 
   implicit val arbDiff: Arbitrary[Difficulty] = Arbitrary(DifficultyGen())
   implicit val b: Arbitrary[SkillSet] = Arbitrary(SkillSetGen())
+  implicit val s: Arbitrary[Slack] = Arbitrary(SlackGen())
 }

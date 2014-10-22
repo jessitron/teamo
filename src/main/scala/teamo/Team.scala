@@ -9,11 +9,6 @@ import akka.agent.Agent
 import scala.concurrent.duration._
 // does this work? Why does this work?
 
-import TeamNature.ButtFactory
-case class TeamNature(culture: Culture, membersCount: Int, featureSupplierFactory: ButtFactory)
-object TeamNature {
-  type ButtFactory = () => () => Feature
-}
 
 // someday: randomly generate starting skillsets etc of members
 class Team(nature: TeamNature, teamo: ActorRef, codebase: Agent[CodeBase]) extends Actor {
@@ -85,7 +80,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
   }
 
   def reapBenefits(task: Feature) = {
-    skillSet = skillSet.addExperience(task, culture.slack)
+    skillSet = skillSet.addExperience(task, culture.slack.value)
   }
 
   //def onPetProject: Boolean = currentTask.size <= 1
