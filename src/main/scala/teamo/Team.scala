@@ -5,6 +5,7 @@ import java.util.Date
 import SkillSet.SkillLevel
 import akka.actor.{Props, ActorRef, Cancellable, Actor}
 import akka.agent.Agent
+import teamo.TeaMo.ImplementedFeature
 
 import scala.concurrent.duration._
 // does this work? Why does this work?
@@ -47,7 +48,6 @@ case class SkillSet(
      val codebaseGainRatio = (feature.difficulty.realExpectedDuration.toHours/4) * (0.01 + slack)/100
      // Features could also have tech, someday.
      val newFamiliarity = codebaseFamiliarity + (1-codebaseFamiliarity) * codebaseGainRatio
-     println("cg: "+newFamiliarity)
      copy(codebaseFamiliarity = newFamiliarity)
    }
 
@@ -75,7 +75,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
   // here's what I want:
   def receive = {
     case Finished => reapBenefits(currentTask.head)
-                    teamo ! currentTask.head // Missing: quality level of feature
+                    teamo ! new ImplementedFeature(currentTask.head,culture.slack,skillSet) // Missing: quality level of feature
                     currentTask = currentTask.tail
                     if (currentTask.isEmpty) manager ! Idle else rescheduleFinishment()
     case t: Feature => currentTask= t::currentTask; rescheduleFinishment()
