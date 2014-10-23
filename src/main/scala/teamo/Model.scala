@@ -13,6 +13,7 @@ object FeatureDurationGuesser {
     val skillMultiplier = 2-skillSet.codebaseFamiliarity
     //if the codebase is terrible, things take double
     val codeBaseMultiplier = 1
-    task.realExpectedDuration * codeBaseMultiplier * skillMultiplier
+    // println(s"${task.realExpectedDuration.toMillis} $codeBaseMultiplier $skillMultiplier")
+    Timing.scale(task.realExpectedDuration * codeBaseMultiplier * skillMultiplier)
   }
 }
