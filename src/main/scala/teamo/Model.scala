@@ -8,10 +8,11 @@ object FeatureDurationGuesser {
    def howLongWillThisTake(task: Difficulty,
                            skillSet: SkillSet,
                            codeBase: CodeQuality,
-                           slack: Slack): Distribution[Duration] = {
-    val minimum = task.points * 1.day * (1 + slack.value)
-    val k = 2.0
-    val theta = 1.0
-    Distribution.gamma(k, theta).map(_ * 1.day).map(_ + minimum)
+                           slack: Slack): Duration = {
+    //if you have no idea, things take double
+    val skillMultiplier = 2-skillSet.codebaseFamiliarity
+    //if the codebase is terrible, things take double
+    val codeBaseMultiplier = 1
+    task.realExpectedDuration * codeBaseMultiplier * skillMultiplier
   }
 }

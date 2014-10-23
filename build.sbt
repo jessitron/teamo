@@ -2,6 +2,8 @@ name := "teamo"
 
 version := "0.1"
 
+scalacOptions ++= Seq("-feature","-language:implicitConversions")
+
 scalaVersion := "2.11.2"
 
 libraryDependencies ++= Seq(

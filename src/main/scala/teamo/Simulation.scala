@@ -13,7 +13,7 @@ object Simulation {
   def main(args: Array[String]) {
     val results = run(TeamNature(Culture(Slack(0.5)),
          4,
-         () => () => Feature(valueAdd = 1, Difficulty(1))
+         () => () => Feature(valueAdd = 1, Difficulty(1,1.day))
       ), 10.days)
     println("--------------------------")
     println(results)
