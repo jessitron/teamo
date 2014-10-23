@@ -44,7 +44,7 @@ case class SkillSet(
    def addExperience(feature: Feature,
      slack: Double): SkillSet = {
      // here is a function.
-     val codebaseGainRatio = feature.difficulty.realExpectedDuration.toDays * (0.01 + slack)/100
+     val codebaseGainRatio = (feature.difficulty.realExpectedDuration.toHours/4) * (0.01 + slack)/100
      // Features could also have tech, someday.
      val newFamiliarity = codebaseFamiliarity + (1-codebaseFamiliarity) * codebaseGainRatio
      println("cg: "+newFamiliarity)

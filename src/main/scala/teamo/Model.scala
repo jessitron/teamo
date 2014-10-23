@@ -14,6 +14,6 @@ object FeatureDurationGuesser {
     //if the codebase is terrible, things take double
     val codeBaseMultiplier = 1
     // println(s"${task.realExpectedDuration.toMillis} $codeBaseMultiplier $skillMultiplier")
-    Timing.scale(task.realExpectedDuration * codeBaseMultiplier * skillMultiplier)
+    Timing.scale(task.realExpectedDuration * codeBaseMultiplier * skillMultiplier) * (1+slack.value)
   }
 }

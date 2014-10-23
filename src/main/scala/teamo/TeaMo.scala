@@ -31,11 +31,11 @@ case class CodeBase(quality: CodeQuality = 1)
 // needs to receive codebase agent
 class TeaMo extends Actor {
 
-  var features: Set[Feature] = Set()
-  var problems: Set[Problem] = Set()
+  var features: List[Feature] = List()
+  var problems: List[Problem] = List()
 
   def receive:Receive= {
-    case w:Feature => features = features + w
+    case w:Feature => features = features :+ w
     case GetValue => sender ! calculateValue
   }
 
