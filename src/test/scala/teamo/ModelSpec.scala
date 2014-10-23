@@ -1,4 +1,4 @@
-package teamo;
+package teamo
 
 import probability_monad.Distribution
 import scala.concurrent.duration._
