@@ -30,13 +30,9 @@ class TeaMo extends Actor {
     case GetValue => sender ! calculateValue
   }
 
-  def progressionOfEvil(imf:ImplementedFeature){
+  def progressionOfEvil(imf:ImplementedFeature) {
     //println("progression of evil"+imf)
-    problems = problems :+ new Problem(imf.feature.difficulty, slackAndDifficultyToPain(imf))
-  }
-  
-  def slackAndDifficultyToPain(imf:ImplementedFeature):Double = {
-    Math.min(Math.max(0,(0.5 - imf.skill.codebaseFamiliarity)/Math.max(0.25,1-imf.slack.value)),1)  
+    problems = problems :+ ProblemGenerator.generate(imf)
   }
   
   // This should be an integral over time.
