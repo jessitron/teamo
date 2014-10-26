@@ -2,6 +2,11 @@ package teamo
 import scala.concurrent.duration._
 import probability_monad.Distribution
 
+trait Task {
+   val difficulty: Difficulty
+   val impact: Value
+}
+
 case class Difficulty(points: Int, realExpectedDuration: Duration = Difficulty.defaultDistribution.sample(1).head) {
 
   override def toString():String =
@@ -35,8 +40,10 @@ object Difficulty{
 /* reference equality is important here */
 class Problem(val difficulty: Difficulty,
   /* percentage of functionality killed */
-  val impact: Double){
+  val impact: Value) extends Task {
   override def toString = { s"Problem{$impact)"}
 }
 
-case class Feature(valueAdd: Value, difficulty:Difficulty)
+case class Feature(valueAdd: Value, difficulty:Difficulty) extends Task {
+  val impact = valueAdd
+}

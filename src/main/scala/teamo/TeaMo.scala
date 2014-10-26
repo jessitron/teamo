@@ -47,4 +47,3 @@ object TeaMo{
     case class ImplementedFeature(feature:Feature,slack:Slack,skill:SkillSet)
 }
 
-class Task

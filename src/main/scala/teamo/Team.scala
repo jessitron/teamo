@@ -12,6 +12,9 @@ import scala.concurrent.duration._
 
 
 // someday: randomly generate starting skillsets etc of members
+/*
+ * Todo: express property "when there is a problem in the bug tracker it gets worked on first"
+ */
 class Team(nature: TeamNature, teamo: ActorRef,
   codebase: Agent[Codebase]
   , bugTracker: Agent[BugTracker]) extends Actor {
@@ -30,8 +33,12 @@ class Team(nature: TeamNature, teamo: ActorRef,
   }
 
   def receive = {
-    case Idle => sender ! pullFeatureOutOfButt()
+    case Idle =>
+      sender ! problem.getOrElse(pullFeatureOutOfButt())
   }
+
+  //TODO: track problems in process, don't give them out twice
+  def problem(): Option[Problem] = bugTracker.get.problems.headOption
 
   def pullFeatureOutOfButt(): Feature = butt()
 
@@ -44,7 +51,7 @@ case class SkillSet(
   codebaseFamiliarity: SkillLevel // you know what Clojure gets 100% right? commas as whitespace.
 //  , techs: Map[Tech, SkillLevel]
 ) {
-   def addExperience(feature: Feature,
+   def addExperience(feature: Task,
      slack: Double): SkillSet = {
      // here is a function.
      val codebaseGainRatio = (feature.difficulty.realExpectedDuration.toHours/4) * (0.01 + slack)/100
@@ -67,7 +74,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
   //Scala doesnt want us to use their stack lass, and since List is a linked list...
   type Stack[T] = List[T]
 
-  var currentTask: Stack[Feature] = List()//List(petProject) // pet project is never finished (property)
+  var currentTask: Stack[Task] = List()//List(petProject) // pet project is never finished (property)
     // feature and problem need a common superclass of Task?
   var workingSince: Date = new Date()
   var finishment: Option[Cancellable] = None
@@ -77,13 +84,17 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
   // here's what I want:
   def receive = {
     case Finished => reapBenefits(currentTask.head)
-                    teamo ! new ImplementedFeature(currentTask.head,culture.slack,skillSet) // Missing: quality level of feature
-                    currentTask = currentTask.tail
+                     val goodNews = currentTask.head match {
+                        case f: Feature => new ImplementedFeature(f,culture.slack,skillSet) // Missing: quality level of feature
+                      }
+                     teamo ! goodNews
+                     currentTask = currentTask.tail
                     if (currentTask.isEmpty) manager ! Idle else rescheduleFinishment()
     case t: Feature => currentTask= t::currentTask; rescheduleFinishment()
+    case p: Problem => currentTask = p::currentTask; rescheduleFinishment()
   }
 
-  def reapBenefits(task: Feature) = {
+  def reapBenefits(task: Task) = {
     skillSet = skillSet.addExperience(task, culture.slack.value)
   }
 
@@ -106,7 +117,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
   // later: pet project turns out to be incredibly valuable feature.
   // Is probably rejected by management
 
-  def howLongWillThisTakeMe(task: Feature): Duration = {
+  def howLongWillThisTakeMe(task: Task): Duration = {
       // scale the difficulty of the task into realtime
       // increase based on slack
       // decrease based on skill level
