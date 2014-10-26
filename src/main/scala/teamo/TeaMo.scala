@@ -15,7 +15,9 @@ class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
   var features: List[Feature] = List()
 
   def receive:Receive= {
-    case w:ImplementedFeature => features = features :+ w.feature
+    case w:ImplementedFeature =>
+      println(s"Release notes: $w")
+      features = features :+ w.feature
       progressionOfEvil(w)
     case FixedProblem(p) => bugTracker.alter { ps => ps - p }
     case GetValue => sender ! calculateValue

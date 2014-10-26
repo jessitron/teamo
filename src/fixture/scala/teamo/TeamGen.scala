@@ -69,4 +69,7 @@ object Implicits {
   implicit val arbDiff: Arbitrary[Difficulty] = Arbitrary(DifficultyGen())
   implicit val b: Arbitrary[SkillSet] = Arbitrary(SkillSetGen())
   implicit val s: Arbitrary[Slack] = Arbitrary(SlackGen())
+  implicit val fs: Arbitrary[Set[Feature]] = Arbitrary(FeaturesGen())
+  implicit val f: Arbitrary[Feature] = Arbitrary(FeatureGen())
 }
+
