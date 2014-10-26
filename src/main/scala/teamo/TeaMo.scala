@@ -1,7 +1,8 @@
 package teamo
 
 import akka.actor.Actor
-import teamo.TeaMo.{ImplementedFeature, TeaMoValue, GetValue}
+import akka.agent.Agent
+import teamo.TeaMo.{ImplementedFeature, TeaMoValue, GetValue, FixedProblem}
 
 import scala.concurrent.duration._
 
@@ -9,20 +10,20 @@ import scala.concurrent.duration._
 
 
 // needs to receive codebase agent
-class TeaMo extends Actor {
+class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
 
   var features: List[Feature] = List()
-  var problems: List[Problem] = List()
 
   def receive:Receive= {
     case w:ImplementedFeature => features = features :+ w.feature
       progressionOfEvil(w)
+    case FixedProblem(p) => bugTracker.alter { ps => ps - p }
     case GetValue => sender ! calculateValue
   }
 
   def progressionOfEvil(imf:ImplementedFeature){
     //println("progression of evil"+imf)
-    problems = problems :+ new Problem(imf.feature.difficulty, slackAndDifficultyToPain(imf))
+    bugTracker.alter(ps => ps + new Problem(imf.feature.difficulty, slackAndDifficultyToPain(imf)))
   }
 
   def slackAndDifficultyToPain(imf:ImplementedFeature):Double = {
@@ -34,10 +35,10 @@ class TeaMo extends Actor {
      // this could be a lot more complicated, it should be
      // a fold over each set. But for now, ultra-simple.
     println(features)
-    println(problems)
+    println(bugTracker.get)
      TeaMoValue(
        features.map(_.valueAdd).sum *
-       problems.map(_.impact).map(1-_).foldLeft(1.0)(_*_))
+       bugTracker.get.problems.map(_.impact).map(1-_).foldLeft(1.0)(_*_))
   }
 }
 

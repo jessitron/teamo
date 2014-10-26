@@ -2,4 +2,11 @@ package teamo;
 
 case class Codebase(quality: CodeQuality = 1)
 
-case class BugTracker(problems: Set[Problem])
+class BugTracker(val problems: Set[Problem]) {
+  def + (p: Problem) = new BugTracker(problems + p)
+  def - (p: Problem) = new BugTracker(problems - p)
+}
+
+object BugTracker {
+  def apply(): BugTracker = new BugTracker(Set())
+}

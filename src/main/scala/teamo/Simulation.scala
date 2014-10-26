@@ -28,10 +28,10 @@ object Simulation {
 
     /* GIT INIT */
     val codebase = Agent(Codebase(1))
-    val bugTracker = Agent(BugTracker(Set()))
+    val bugTracker = Agent(BugTracker())
 
     /* TEAMO */
-    val teamo = system.actorOf(Props[TeaMo])
+    val teamo = system.actorOf(Props(new TeaMo(bugTracker)))
 
     /* HIRE */
     val developmentTeam = system.actorOf(Props(new Team(t, teamo, codebase,
