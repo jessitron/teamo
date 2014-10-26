@@ -45,5 +45,6 @@ object TeaMo{
     case object GetValue
     case class TeaMoValue(value:Double)
     case class ImplementedFeature(feature:Feature,slack:Slack,skill:SkillSet)
+    case class FixedProblem(problem: Problem)
 }
 

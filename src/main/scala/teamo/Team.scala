@@ -5,7 +5,7 @@ import java.util.Date
 import SkillSet.SkillLevel
 import akka.actor.{Props, ActorRef, Cancellable, Actor}
 import akka.agent.Agent
-import teamo.TeaMo.ImplementedFeature
+import teamo.TeaMo.{ImplementedFeature, FixedProblem}
 
 import scala.concurrent.duration._
 // does this work? Why does this work?
@@ -85,7 +85,8 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
   def receive = {
     case Finished => reapBenefits(currentTask.head)
                      val goodNews = currentTask.head match {
-                        case f: Feature => new ImplementedFeature(f,culture.slack,skillSet) // Missing: quality level of feature
+                        case f: Feature => ImplementedFeature(f,culture.slack,skillSet) // Missing: quality level of feature
+                        case p: Problem => FixedProblem(p)
                       }
                      teamo ! goodNews
                      currentTask = currentTask.tail
