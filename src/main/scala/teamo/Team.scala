@@ -12,7 +12,9 @@ import scala.concurrent.duration._
 
 
 // someday: randomly generate starting skillsets etc of members
-class Team(nature: TeamNature, teamo: ActorRef, codebase: Agent[Codebase]) extends Actor {
+class Team(nature: TeamNature, teamo: ActorRef,
+  codebase: Agent[Codebase]
+  , bugTracker: Agent[BugTracker]) extends Actor {
 
   var teamMembers: Seq[ActorRef] = Seq()
   val butt = nature.featureSupplierFactory()
