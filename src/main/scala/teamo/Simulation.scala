@@ -27,7 +27,7 @@ object Simulation {
     val system = ActorSystem("teamo")
 
     /* GIT INIT */
-    val codebase = Agent(CodeBase(1))
+    val codebase = Agent(Codebase(1))
 
     /* TEAMO */
     val teamo = system.actorOf(Props[TeaMo])

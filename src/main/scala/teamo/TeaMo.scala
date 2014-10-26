@@ -7,7 +7,6 @@ import scala.concurrent.duration._
 
 
 
-case class CodeBase(quality: CodeQuality = 1)
 
 // needs to receive codebase agent
 class TeaMo extends Actor {
