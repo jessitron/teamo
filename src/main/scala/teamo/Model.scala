@@ -32,10 +32,20 @@ object RealDifficultyGenerator {
 
 object ProblemGenerator {
   
+  val defaultAnnoyance = 0.1
+  
   def generate(iw:ImplementedWork):Problem = 
     new Problem(iw.work.difficulty, slackAndDifficultyToPain(iw))
 
   private def slackAndDifficultyToPain(iw:ImplementedWork):Double = {
-    Math.min(Math.max(0,(0.5 - iw.skill.codebaseFamiliarity)/Math.max(0.25,1-iw.slack.value)),1)
+    
+    //so if we don't understand the code, half our slack is useless
+    val slackValueRatio =  0.5 + (iw.skill.codebaseFamiliarity/2)
+    //Note that this is linear, which is very unrealistic.
+    val annoyanceDenominator = 1+4*(iw.slack.value * slackValueRatio)
+    val actualAnnoyance = defaultAnnoyance/ annoyanceDenominator
+    
+    println(s"Problem annoyance: $actualAnnoyance  $annoyanceDenominator $slackValueRatio")
+    Math.min(Math.max(0,actualAnnoyance),1) //last check to make sure it's between 1 and 0
   }
 }
