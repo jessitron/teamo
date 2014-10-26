@@ -35,7 +35,7 @@ object ProblemGenerator {
   def generate(iw:ImplementedWork):Problem = 
     new Problem(iw.work.difficulty, slackAndDifficultyToPain(iw))
 
-  def slackAndDifficultyToPain(iw:ImplementedWork):Double = {
+  private def slackAndDifficultyToPain(iw:ImplementedWork):Double = {
     Math.min(Math.max(0,(0.5 - iw.skill.codebaseFamiliarity)/Math.max(0.25,1-iw.slack.value)),1)
   }
 }
