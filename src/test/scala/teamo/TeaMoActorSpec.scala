@@ -5,14 +5,14 @@ import akka.util.Timeout
 import org.scalatest.{Matchers, FunSuite}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import akka.pattern.ask
-import teamo.TeaMo.{TeaMoValue, GetValue}
+import teamo.TeaMo.{ImplementedWork, TeaMoValue, GetValue}
 
 import scala.concurrent._
 import scala.concurrent.duration._
 import ExecutionContext.Implicits.global
 
 class TeaMoActorSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matchers {
-  test("Adding features increases value" /* (it might not always but now it should) */) {
+  test("A good programmer adding features increases value" /* (it might not always but now it should) */) {
     forAll(FeaturesGen(),FeatureGen()) { (features: Set[Feature], addlFeature: Feature) =>
       // this could use just one actor system
       val sys = ActorSystem(/* unique name */ "poo")
@@ -23,7 +23,7 @@ class TeaMoActorSpec extends FunSuite with GeneratorDrivenPropertyChecks with Ma
       
       implicit val timeout:Timeout = 5.seconds
       val valueBefore = (teamo ? GetValue).mapTo[TeaMoValue]
-      teamo ! addlFeature
+      teamo ! ImplementedWork(addlFeature,Slack(2.0),SkillSet(1))
       val valueAfter = (teamo ? GetValue).mapTo[TeaMoValue]
 
       // after problems happen, this may not be true.
