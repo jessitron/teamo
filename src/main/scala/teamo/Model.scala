@@ -17,3 +17,14 @@ object FeatureDurationGuesser {
     Timing.scale(task.realExpectedDuration * codeBaseMultiplier * skillMultiplier) * (1+slack.value)
   }
 }
+
+object RealDifficultyGenerator {
+  private val k = 2.0
+  private val theta = 1.0
+
+  val defaultDistribution = Distribution.gamma(k, theta).map(x=> (x * 12.hours) + 1.hour).map{
+    x=> if(x>7.days) 7.days else x
+  }
+
+  def apply() = defaultDistribution.sample(1).head
+}

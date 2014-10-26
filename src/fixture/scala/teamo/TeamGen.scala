@@ -41,7 +41,7 @@ object CultureGen{
 }
 object DifficultyGen{
   def apply(): Gen[Difficulty] = {
-    for(d<-Gen.oneOf(1,1,1,2,2,2,2,3,3,3,3,5,5,8)) yield Difficulty(d,Difficulty.defaultDifficulty)
+    for(d<-Gen.oneOf(1,1,1,2,2,2,2,3,3,3,3,5,5,8)) yield Difficulty(d)
   }
 }
 

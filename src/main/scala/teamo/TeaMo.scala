@@ -1,21 +1,11 @@
 package teamo
 
 import akka.actor.Actor
-import probability_monad.Distribution
 import teamo.TeaMo.{ImplementedFeature, TeaMoValue, GetValue}
 
 import scala.concurrent.duration._
 
-case class Difficulty(points: Int, realExpectedDuration: Duration = Difficulty.defaultDistribution.sample(1).head)
-
-object Difficulty{
-  private val k = 2.0
-  private val theta = 1.0
-  val defaultDistribution = Distribution.gamma(k, theta).map(x=> (x * 1.day) + 1.hour).map{
-    x=> if(x>7.days) 7.days else x
-  }
-  def defaultDifficulty = defaultDistribution.sample(1).head
-}
+case class Difficulty(points: Int, realExpectedDuration: Duration = RealDifficultyGenerator())
 
 /* reference equality is important here */
 class Problem(val difficulty: Difficulty,
