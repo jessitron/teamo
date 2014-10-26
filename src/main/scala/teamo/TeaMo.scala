@@ -1,30 +1,11 @@
 package teamo
 
 import akka.actor.Actor
-import probability_monad.Distribution
 import teamo.TeaMo.{ImplementedFeature, TeaMoValue, GetValue}
 
 import scala.concurrent.duration._
 
-case class Difficulty(points: Int, realExpectedDuration: Duration = Difficulty.defaultDistribution.sample(1).head)
 
-object Difficulty{
-  private val k = 2.0
-  private val theta = 1.0
-  val defaultDistribution = Distribution.gamma(k, theta).map(x=> (x * 1.day) + 1.hour).map{
-    x=> if(x>7.days) 7.days else x
-  }
-  def defaultDifficulty = defaultDistribution.sample(1).head
-}
-
-/* reference equality is important here */
-class Problem(val difficulty: Difficulty,
-  /* percentage of functionality killed */
-  val impact: Double){
-  override def toString = { s"Problem{$impact)"}
-}
-
-case class Feature(valueAdd: Value, difficulty:Difficulty)
 
 case class CodeBase(quality: CodeQuality = 1)
 
@@ -44,11 +25,11 @@ class TeaMo extends Actor {
     //println("progression of evil"+imf)
     problems = problems :+ new Problem(imf.feature.difficulty, slackAndDifficultyToPain(imf))
   }
-  
+
   def slackAndDifficultyToPain(imf:ImplementedFeature):Double = {
-    Math.min(Math.max(0,(0.5 - imf.skill.codebaseFamiliarity)/Math.max(0.25,1-imf.slack.value)),1)  
+    Math.min(Math.max(0,(0.5 - imf.skill.codebaseFamiliarity)/Math.max(0.25,1-imf.slack.value)),1)
   }
-  
+
   // This should be an integral over time.
   def calculateValue = {
      // this could be a lot more complicated, it should be
