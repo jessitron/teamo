@@ -2,7 +2,26 @@ package teamo
 import scala.concurrent.duration._
 import probability_monad.Distribution
 
-case class Difficulty(points: Int, realExpectedDuration: Duration = Difficulty.defaultDistribution.sample(1).head)
+case class Difficulty(points: Int, realExpectedDuration: Duration = Difficulty.defaultDistribution.sample(1).head) {
+
+  override def toString():String =
+    s"Difficulty($points points, takes ${DurationPrinter.format(realExpectedDuration)}"
+}
+
+object DurationPrinter {
+  def format(d: Duration): String =
+    if(d.isFinite) printTuple(tupleDuration(d)) else "forever!!"
+
+  private val printTuple: Tuple2[Double,TimeUnit] => String  =
+  { case (d:Double, u: TimeUnit) => "%.1f %s".format(d,u.toString.toLowerCase) }
+
+  private def tupleDuration(d: Duration) = {
+    usefulUnits.map(unit => d.toUnit(unit) -> unit).filter { case (k,v) => k >=  1 }.head
+  }
+
+  val usefulUnits = Seq(DAYS, HOURS, MINUTES, SECONDS, MILLISECONDS, NANOSECONDS)
+
+}
 
 object Difficulty{
   private val k = 2.0
