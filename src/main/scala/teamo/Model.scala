@@ -1,7 +1,7 @@
 package teamo
 
 import probability_monad.Distribution
-import teamo.TeaMo.ImplementedFeature
+import teamo.TeaMo.ImplementedWork
 
 import scala.concurrent.duration._
 
@@ -32,10 +32,10 @@ object RealDifficultyGenerator {
 
 object ProblemGenerator {
   
-  def generate(imf:ImplementedFeature):Problem = 
-    new Problem(imf.feature.difficulty, slackAndDifficultyToPain(imf))
+  def generate(iw:ImplementedWork):Problem = 
+    new Problem(iw.work.difficulty, slackAndDifficultyToPain(iw))
 
-  def slackAndDifficultyToPain(imf:ImplementedFeature):Double = {
-    Math.min(Math.max(0,(0.5 - imf.skill.codebaseFamiliarity)/Math.max(0.25,1-imf.slack.value)),1)
+  def slackAndDifficultyToPain(iw:ImplementedWork):Double = {
+    Math.min(Math.max(0,(0.5 - iw.skill.codebaseFamiliarity)/Math.max(0.25,1-iw.slack.value)),1)
   }
 }

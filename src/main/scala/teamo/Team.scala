@@ -5,7 +5,7 @@ import java.util.Date
 import SkillSet.SkillLevel
 import akka.actor.{Props, ActorRef, Cancellable, Actor}
 import akka.agent.Agent
-import teamo.TeaMo.ImplementedFeature
+import teamo.TeaMo.ImplementedWork
 
 import scala.concurrent.duration._
 // does this work? Why does this work?
@@ -42,7 +42,7 @@ case class SkillSet(
   codebaseFamiliarity: SkillLevel // you know what Clojure gets 100% right? commas as whitespace.
 //  , techs: Map[Tech, SkillLevel]
 ) {
-   def addExperience(feature: Feature,
+   def addExperience(feature: Workable,
      slack: Double): SkillSet = {
      // here is a function.
      val codebaseGainRatio = (feature.difficulty.realExpectedDuration.toHours/4) * (0.01 + slack)/100
@@ -65,7 +65,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
   //Scala doesnt want us to use their stack lass, and since List is a linked list...
   type Stack[T] = List[T]
 
-  var currentTask: Stack[Feature] = List()//List(petProject) // pet project is never finished (property)
+  var currentTask: Stack[Workable] = List()//List(petProject) // pet project is never finished (property)
     // feature and problem need a common superclass of Task?
   var workingSince: Date = new Date()
   var finishment: Option[Cancellable] = None
@@ -75,13 +75,13 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
   // here's what I want:
   def receive = {
     case Finished => reapBenefits(currentTask.head)
-                    teamo ! new ImplementedFeature(currentTask.head,culture.slack,skillSet) // Missing: quality level of feature
+                    teamo ! new ImplementedWork(currentTask.head,culture.slack,skillSet) // Missing: quality level of feature
                     currentTask = currentTask.tail
                     if (currentTask.isEmpty) manager ! Idle else rescheduleFinishment()
     case t: Feature => currentTask= t::currentTask; rescheduleFinishment()
   }
 
-  def reapBenefits(task: Feature) = {
+  def reapBenefits(task: Workable) = {
     skillSet = skillSet.addExperience(task, culture.slack.value)
   }
 
@@ -104,7 +104,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], cultu
   // later: pet project turns out to be incredibly valuable feature.
   // Is probably rejected by management
 
-  def howLongWillThisTakeMe(task: Feature): Duration = {
+  def howLongWillThisTakeMe(task: Workable): Duration = {
       // scale the difficulty of the task into realtime
       // increase based on slack
       // decrease based on skill level

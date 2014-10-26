@@ -1,20 +1,24 @@
 package teamo
 
 import akka.actor.Actor
-import teamo.TeaMo.{ImplementedFeature, TeaMoValue, GetValue}
+import teamo.TeaMo.{ImplementedWork, TeaMoValue, GetValue}
 
 import scala.concurrent.duration._
 
 case class Difficulty(points: Int, realExpectedDuration: Duration = RealDifficultyGenerator())
 
+trait Workable{
+  val difficulty:Difficulty
+}
+
 /* reference equality is important here */
 class Problem(val difficulty: Difficulty,
   /* percentage of functionality killed */
-  val impact: Double){
+  val impact: Double) extends Workable{
   override def toString = { s"Problem{$impact)"}
 }
 
-case class Feature(valueAdd: Value, difficulty:Difficulty)
+case class Feature(valueAdd: Value, difficulty:Difficulty) extends Workable
 
 case class CodeBase(quality: CodeQuality = 1)
 
@@ -25,14 +29,21 @@ class TeaMo extends Actor {
   var problems: List[Problem] = List()
 
   def receive:Receive= {
-    case w:ImplementedFeature => features = features :+ w.feature
+    case w:ImplementedWork => integrateWork(w)
       progressionOfEvil(w)
     case GetValue => sender ! calculateValue
   }
+  
+  def integrateWork(iw:ImplementedWork): Unit ={
+    iw.work match {
+      case f:Feature => features = features :+ f
+      case p:Problem =>  
+    }
+  }
 
-  def progressionOfEvil(imf:ImplementedFeature) {
+  def progressionOfEvil(iw:ImplementedWork) {
     //println("progression of evil"+imf)
-    problems = problems :+ ProblemGenerator.generate(imf)
+    problems = problems :+ ProblemGenerator.generate(iw)
   }
   
   // This should be an integral over time.
@@ -50,7 +61,7 @@ class TeaMo extends Actor {
 object TeaMo{
     case object GetValue
     case class TeaMoValue(value:Double)
-    case class ImplementedFeature(feature:Feature,slack:Slack,skill:SkillSet)
+    case class ImplementedWork(work:Workable,slack:Slack,skill:SkillSet)
 }
 
 class Task
