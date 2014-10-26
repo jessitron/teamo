@@ -40,9 +40,7 @@ import scala.language.existentials
 
       val differenceFuture = valueAfter.flatMap(
         after =>
-        valueBefore.map { before =>
-           println(s"before = $before after = $after")
-        after.value - before.value})
+        valueBefore.map { before => after.value - before.value})
 
       val difference = Await.result(differenceFuture,5.seconds)
       sys.shutdown()

@@ -16,7 +16,7 @@ class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
 
   def receive:Receive= {
     case w:ImplementedFeature =>
-      println(s"Release notes: $w")
+     // println(s"Release notes: $w")
       features = features :+ w.feature
       progressionOfEvil(w)
     case FixedProblem(p) => bugTracker.alter { ps => ps - p }
@@ -36,8 +36,8 @@ class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
   def calculateValue = {
      // this could be a lot more complicated, it should be
      // a fold over each set. But for now, ultra-simple.
-    println(features)
-    println(bugTracker.get)
+   // println(features)
+   // println(bugTracker.get)
      TeaMoValue(
        features.map(_.valueAdd).sum *
        bugTracker.get.problems.map(_.impact).map(1-_).foldLeft(1.0)(_*_))
