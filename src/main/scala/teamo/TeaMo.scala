@@ -1,7 +1,7 @@
 package teamo
 
 import akka.actor.Actor
-import teamo.TeaMo.{ImplementedWork, TeaMoValue, GetValue}
+import teamo.TeaMo.{GetProblems, ImplementedWork, TeaMoValue, GetValue}
 
 import scala.concurrent.duration._
 
@@ -32,18 +32,22 @@ class TeaMo extends Actor {
     case w:ImplementedWork => integrateWork(w)
       progressionOfEvil(w)
     case GetValue => sender ! calculateValue
+    case GetProblems => sender ! problems  
   }
   
   def integrateWork(iw:ImplementedWork): Unit ={
     iw.work match {
       case f:Feature => features = features :+ f
-      case p:Problem =>  
+      case p:Problem =>  problems = problems diff List(p)
     }
   }
 
   def progressionOfEvil(iw:ImplementedWork) {
     //println("progression of evil"+imf)
-    problems = problems :+ ProblemGenerator.generate(iw)
+    iw.work match {
+      case f:Feature => problems = problems :+ ProblemGenerator.generate(iw)
+      case p:Problem => //we are just avoiding evil
+    }
   }
   
   // This should be an integral over time.
@@ -61,6 +65,7 @@ class TeaMo extends Actor {
 
 object TeaMo{
     case object GetValue
+    case object GetProblems
     case class TeaMoValue(value:Double)
     case class ImplementedWork(work:Workable,slack:Slack,skill:SkillSet)
 }
