@@ -16,7 +16,7 @@ class SomeSpec extends FunSuite with GeneratorDrivenPropertyChecks with Matchers
     forAll (TeamNatureGen(), CultureGen())
       { (team : TeamNature, cultureWithMoreSlack: Culture) =>
         whenever(cultureWithMoreSlack.slack > team.culture.slack) {
-      val aWhile = 20.days
+      val aWhile = 40.days
       val results = simulate(team, aWhile)
       val teamWithMoreSlack = team.copy(culture = cultureWithMoreSlack)
       val resultsWithMoreSlack = simulate(teamWithMoreSlack, aWhile)

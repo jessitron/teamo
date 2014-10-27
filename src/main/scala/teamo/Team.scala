@@ -12,7 +12,12 @@ import scala.concurrent.duration._
 
 
 // someday: randomly generate starting skillsets etc of members
-class Team(nature: TeamNature, teamo: ActorRef, codebase: Agent[CodeBase]) extends Actor {
+/*
+ * Todo: express property "when there is a problem in the bug tracker it gets worked on first"
+ */
+class Team(nature: TeamNature, teamo: ActorRef,
+  codebase: Agent[Codebase]
+  , bugTracker: Agent[BugTracker]) extends Actor {
 
   var teamMembers: Seq[ActorRef] = Seq()
   val butt = nature.featureSupplierFactory()
@@ -61,7 +66,7 @@ object SkillSet {
 
 // but the essential thing is that working on a task doesn't only get that task done.
 
-class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[CodeBase], culture: Culture) extends Actor {
+class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], culture: Culture) extends Actor {
   //Scala doesnt want us to use their stack lass, and since List is a linked list...
   type Stack[T] = List[T]
 

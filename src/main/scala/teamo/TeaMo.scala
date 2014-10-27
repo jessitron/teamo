@@ -1,6 +1,7 @@
 package teamo
 
 import akka.actor.Actor
+import akka.agent.Agent
 import teamo.TeaMo.{GetProblems, ImplementedWork, TeaMoValue, GetValue}
 
 import scala.concurrent.duration._
@@ -20,10 +21,8 @@ class Problem(val difficulty: Difficulty,
 
 case class Feature(valueAdd: Value, difficulty:Difficulty) extends Workable
 
-case class CodeBase(quality: CodeQuality = 1)
-
 // needs to receive codebase agent
-class TeaMo extends Actor {
+class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
 
   var features: List[Feature] = List()
   var problems: List[Problem] = List()
@@ -38,7 +37,7 @@ class TeaMo extends Actor {
   def integrateWork(iw:ImplementedWork): Unit ={
     iw.work match {
       case f:Feature => features = features :+ f
-      case p:Problem =>  problems = problems diff List(p)
+      case p:Problem =>  bugTracker.alter{ps => ps - p}
     }
   }
 
@@ -68,6 +67,7 @@ object TeaMo{
     case object GetProblems
     case class TeaMoValue(value:Double)
     case class ImplementedWork(work:Workable,slack:Slack,skill:SkillSet)
+    case class FixedProblem(problem: Problem)
 }
 
 class Task
