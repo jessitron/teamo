@@ -25,13 +25,11 @@ case class Feature(valueAdd: Value, difficulty:Difficulty) extends Workable
 class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
 
   var features: List[Feature] = List()
-  var problems: List[Problem] = List()
 
   def receive:Receive= {
     case w:ImplementedWork => integrateWork(w)
       progressionOfEvil(w)
     case GetValue => sender ! calculateValue
-    case GetProblems => sender ! problems  
   }
   
   def integrateWork(iw:ImplementedWork): Unit ={
@@ -44,7 +42,7 @@ class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
   def progressionOfEvil(iw:ImplementedWork) {
     //println("progression of evil"+imf)
     iw.work match {
-      case f:Feature => problems = problems :+ ProblemGenerator.generate(iw)
+      case f:Feature =>     bugTracker.alter(ps => ps + ProblemGenerator.generate(iw))
       case p:Problem => //we are just avoiding evil
     }
   }
@@ -56,7 +54,7 @@ class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
     //println(features.size + " " + features)
     //println(problems)
     val featureValue = features.map(_.valueAdd).sum
-    val problemMultiplier = problems.map(_.impact).map(1-_).foldLeft(1.0)(_*_)
+    val problemMultiplier = bugTracker.get().problems.map(_.impact).map(1-_).foldLeft(1.0)(_*_)
     //println(s"$featureValue * $problemMultiplier")
      TeaMoValue(featureValue * problemMultiplier )
   }
