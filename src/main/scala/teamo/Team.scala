@@ -33,7 +33,17 @@ class Team(nature: TeamNature, teamo: ActorRef,
   }
 
   def receive = {
-    case Idle => sender ! pullFeatureOutOfButt()
+    case Idle => sender ! problem.getOrElse(pullFeatureOutOfButt())
+  }
+
+  var handedProblems:Seq[Problem] = Seq()
+  def problem(): Option[Problem] = {
+    val ret = bugTracker.get.problems.filterNot(handedProblems.contains).headOption
+    ret match {
+      case Some(x) => handedProblems = handedProblems :+ x
+      case _ =>
+    }
+    ret
   }
 
   def pullFeatureOutOfButt(): Feature = butt()
