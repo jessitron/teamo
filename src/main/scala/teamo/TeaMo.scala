@@ -6,7 +6,9 @@ import teamo.TeaMo.{GetProblems, ImplementedWork, TeaMoValue, GetValue}
 
 import scala.concurrent.duration._
 
-case class Difficulty(points: Int, realExpectedDuration: Duration = RealDifficultyGenerator())
+case class Difficulty(points: Int, realExpectedDuration: Duration = RealDifficultyGenerator()){
+  def * (d:Double) = copy(realExpectedDuration = realExpectedDuration * d)
+}
 
 trait Workable{
   val difficulty:Difficulty

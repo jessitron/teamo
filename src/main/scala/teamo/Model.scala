@@ -34,10 +34,11 @@ object ProblemGenerator {
   
   val defaultAnnoyance = 0.1
   
-  def generate(iw:ImplementedWork):Problem = 
-    new Problem(iw.work.difficulty, slackAndDifficultyToPain(iw))
-
-  private def slackAndDifficultyToPain(iw:ImplementedWork):Double = {
+  def generate(iw:ImplementedWork):Problem = {
+    val impact = calculateImpact(iw)
+    new Problem(iw.work.difficulty * (impact * 4), impact)
+  }
+  private def calculateImpact(iw:ImplementedWork):Double = {
     
     //so if we don't understand the code, half our slack is useless
     val slackValueRatio =  0.5 + (iw.skill.codebaseFamiliarity/2)
