@@ -53,11 +53,11 @@ class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
   def calculateValue = {
      // this could be a lot more complicated, it should be
      // a fold over each set. But for now, ultra-simple.
-    println(features.size + " " + features)
-    println(problems)
+    //println(features.size + " " + features)
+    //println(problems)
     val featureValue = features.map(_.valueAdd).sum
     val problemMultiplier = problems.map(_.impact).map(1-_).foldLeft(1.0)(_*_)
-    println(s"$featureValue * $problemMultiplier")
+    //println(s"$featureValue * $problemMultiplier")
      TeaMoValue(featureValue * problemMultiplier )
   }
 }
