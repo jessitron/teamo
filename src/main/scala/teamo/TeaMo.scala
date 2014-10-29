@@ -24,16 +24,23 @@ class Problem(val difficulty: Difficulty,
 case class Feature(valueAdd: Value, difficulty:Difficulty) extends Workable
 
 // needs to receive codebase agent
-class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
+class TeaMo(bugTracker: Agent[BugTracker], logger: ValueLogger = PirateLogger()) extends Actor {
 
   var features: List[Feature] = List()
 
   def receive:Receive= {
     case w:ImplementedWork => integrateWork(w)
       progressionOfEvil(w)
-    case GetValue => sender ! calculateValue
+      loginate()
+    case GetValue => sender ! TeaMoValue(calculateValue)
   }
-  
+
+  def loginate() {
+    logger.loginate(features.size, valueFromFeatures,
+      bugTracker.get().problems.size, impactOfProblems,
+      calculateValue)
+  }
+
   def integrateWork(iw:ImplementedWork): Unit ={
     iw.work match {
       case f:Feature => features = features :+ f
@@ -48,17 +55,19 @@ class TeaMo(bugTracker: Agent[BugTracker]) extends Actor {
       case p:Problem => //we are just avoiding evil
     }
   }
-  
+
+  def valueFromFeatures = features.map(_.valueAdd).sum
+  def impactOfProblems = bugTracker.get().problems.map(_.impact).map(1-_).foldLeft(1.0)(_*_)
   // This should be an integral over time.
   def calculateValue = {
      // this could be a lot more complicated, it should be
      // a fold over each set. But for now, ultra-simple.
     //println(features.size + " " + features)
     //println(problems)
-    val featureValue = features.map(_.valueAdd).sum
-    val problemMultiplier = bugTracker.get().problems.map(_.impact).map(1-_).foldLeft(1.0)(_*_)
+    val featureValue = valueFromFeatures
+    val problemMultiplier = impactOfProblems
     //println(s"$featureValue * $problemMultiplier")
-     TeaMoValue(featureValue * problemMultiplier )
+     featureValue * problemMultiplier
   }
 }
 
