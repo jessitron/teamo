@@ -24,7 +24,7 @@ class Team(nature: TeamNature, teamo: ActorRef,
 
   override def preStart {
 
-    val newTeamMembers =  for(i<-0.to(nature.membersCount)) yield
+    val newTeamMembers =  for(i<-1.to(nature.membersCount)) yield
       context.system.actorOf(Props(new Coder(self,teamo,codebase,nature.culture)))
 
     teamMembers++newTeamMembers
