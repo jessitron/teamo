@@ -97,7 +97,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
                     currentTask = currentTask.tail
                     if (currentTask.isEmpty) manager ! Idle else rescheduleFinishment()
                     say("finished " + completedWork)
-    case t: Feature => currentTask= t::currentTask; rescheduleFinishment(); say("starting " + t)
+    case t: Workable => currentTask= t::currentTask; rescheduleFinishment(); say("starting " + t)
     case wat => println("Waaaaah " + name + " doesn't know how to " + wat )
   }
 
