@@ -79,6 +79,7 @@ object SkillSet {
 class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], culture: Culture) extends Actor {
   //Scala doesnt want us to use their stack lass, and since List is a linked list...
   type Stack[T] = List[T]
+  val name = Coder.nameGen.sample.get
 
   var currentTask: Stack[Workable] = List()//List(petProject) // pet project is never finished (property)
     // feature and problem need a common superclass of Task?
@@ -89,11 +90,19 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
 
   // here's what I want:
   def receive = {
-    case Finished => reapBenefits(currentTask.head)
-                    teamo ! new ImplementedWork(currentTask.head,culture.slack,skillSet) // Missing: quality level of feature
+    case Finished =>
+      val completedWork = currentTask.head
+      reapBenefits(completedWork)
+                    teamo ! new ImplementedWork(completedWork,culture.slack,skillSet) // Missing: quality level of feature
                     currentTask = currentTask.tail
                     if (currentTask.isEmpty) manager ! Idle else rescheduleFinishment()
-    case t: Feature => currentTask= t::currentTask; rescheduleFinishment()
+                    say("finished " + completedWork)
+    case t: Feature => currentTask= t::currentTask; rescheduleFinishment(); say("starting " + t)
+    case wat => println("Waaaaah " + name + " doesn't know how to " + wat )
+  }
+
+  def say(msg: String) {
+    println(new Date() + " " + name + " " + msg)
   }
 
   def reapBenefits(task: Workable) = {
@@ -130,5 +139,10 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
        culture.slack)
   }
 
+}
+
+object Coder {
+  val nameGen = org.scalacheck.Gen.oneOf("Jamie","Pat","Kim","Alex","Addison","Haim","Subash",
+    "Saron","Paco","Parag","Andrea","Bodil","Francesco","Mario","Chad","Clement","Viktor")
 }
 
