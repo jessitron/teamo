@@ -36,7 +36,14 @@ object ProblemGenerator {
 
   def generate(iw:ImplementedWork):Set[Problem] = {
     val impact = calculateImpact(iw)
-    Set(new Problem(iw.work.difficulty * (impact * 4), impact))
+    val problems =
+      for (i <- 1.to(qtyOfProblems(iw.slack)))
+        yield new Problem(iw.work.difficulty * (impact * 4), impact)
+    problems.toSet
+  }
+
+  private def qtyOfProblems(slack: Slack): Int = {
+    1
   }
   private def calculateImpact(iw:ImplementedWork):Double = {
 
