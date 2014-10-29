@@ -12,7 +12,7 @@ import akka.pattern._
 object Simulation {
 
   def main(args: Array[String]) {
-    val results = run(TeamNature(Culture(Slack(0.5)),
+    val results = run(TeamNature(Culture(Slack(0.0)),
          1, // members
          () => () => Feature(valueAdd = 1, Difficulty(1,1.day))
       ), 180.days)
