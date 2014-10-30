@@ -50,7 +50,8 @@ class TeaMo(bugTracker: Agent[BugTracker],
      // this could be a lot more complicated, it should be
      // a fold over each set. But for now, ultra-simple.
     val featureValue = valueFromFeatures
-    problems.map(_.impact).foldRight(featureValue)(_.hurt(_))
+    val worth = Worth(featureValue)
+    problems.map(_.impact).foldRight(worth)(_.hurt(_)).currentValue
   }
 }
 

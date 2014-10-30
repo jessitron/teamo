@@ -54,6 +54,7 @@ object ProblemGenerator {
 
   private def calculateImpact(iw:ImplementedWork):Double = {
 
+
     //so if we don't understand the code, half our slack is useless
     val slackValueRatio =  0.5 + (iw.skill.codebaseFamiliarity/2)
     //Note that this is linear, which is very unrealistic.
@@ -63,6 +64,7 @@ object ProblemGenerator {
     //println(s"Problem annoyance: $actualAnnoyance  $annoyanceDenominator $slackValueRatio")
     Math.min(Math.max(0,actualAnnoyance),1) //last check to make sure it's between 1 and 0
   }
+
 }
 
 object CodeImpact {

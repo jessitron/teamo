@@ -11,20 +11,15 @@ trait Workable{
 }
 
 trait Impact {
-  def hurt(before: Value): Value
+  def hurt(before: Worth): Worth
 }
-case class PercentageImpact(damage: Double) extends Impact {
+case class SystemOutage(damage: Double) extends Impact {
   assert(damage >= 0)
   assert(damage <= 1)
-  def hurt(before:Value) = before * (1-damage)
+  def hurt(before:Worth) = before.outage(damage)
 }
-case class WorstCase(percentage: Double, minimumDamage: Value) extends Impact {
-  def hurt(before:Value) = {
-    val percentPain = before * percentage
-    val greatestPain = Math.max(percentPain, minimumDamage)
-    val after = before - greatestPain
-    Math.min(0, after)
-  }
+case class BrokenFeature(valueLost: Value) {
+  def hurt(before:Worth) = before.break(valueLost)
 }
 
 /* reference equality is important here */
@@ -35,7 +30,7 @@ class Problem(val difficulty: Difficulty,
 }
 object Problem {
   def apply(difficulty: Difficulty, percentageImpact: Double): Problem =
-    new Problem(difficulty, PercentageImpact(percentageImpact))
+    new Problem(difficulty, SystemOutage(percentageImpact))
 }
 
 case class Feature(valueAdd: Value, difficulty:Difficulty) extends Workable
