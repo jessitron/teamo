@@ -37,11 +37,16 @@ object ProblemGenerator {
   val typicalFeatureSize: CodeSize = 250.0
 
   def generate(iw:ImplementedWork, code: Codebase):Set[Problem] = {
-    val impact = calculateImpact(iw)
     val problems =
       for (i <- 1.to(qtyOfProblems(iw.skill, code)))
-        yield Problem(iw.work.difficulty * (impact * 4), impact)
+        yield new Problem(chooseDifficulty(iw, i), calculateImpact(iw))
     problems.toSet
+  }
+
+  private def chooseDifficulty(iw: ImplementedWork, i: Int) = {
+    val howMuchHarder = Seq(0.125, 0.25, 0.5, 1, 2)(i)
+    // ignoring points in difficulty
+    iw.work.difficulty * howMuchHarder
   }
 
   private def qtyOfProblems(skill: SkillSet, code: Codebase ): Int = {
@@ -52,19 +57,32 @@ object ProblemGenerator {
 
   private def rangeLimit(v: Int, low: Int, high: Int) = Math.min(high, Math.max(low, v))
 
-  private def calculateImpact(iw:ImplementedWork):Double = {
+  val impactsFromSmallToLarge: Seq[Workable => Impact] =
+    Seq(partOfChange(0.25), partOfChange(0.50), partOfChange(1.00),
+      systemwideImpact(0.10), systemwideImpact(0.20), systemwideImpact(1.00))
+  val maxSeverity = (impactsFromSmallToLarge.size)
 
+  def impact(severity:Int, w: Workable) = impactsFromSmallToLarge(severity)(w)
 
-    //so if we don't understand the code, half our slack is useless
-    val slackValueRatio =  0.5 + (iw.skill.codebaseFamiliarity/2)
-    //Note that this is linear, which is very unrealistic.
-    val annoyanceDenominator = 1+8*(iw.slack.value * slackValueRatio)
-    val actualAnnoyance = defaultAnnoyance/ annoyanceDenominator
+  // it's not a var, but it's stateful so I mark it that way
+  var impactSeverityPattern: Iterator[Int] = Stream.continually(0 until maxSeverity).flatten.iterator
 
-    //println(s"Problem annoyance: $actualAnnoyance  $annoyanceDenominator $slackValueRatio")
-    Math.min(Math.max(0,actualAnnoyance),1) //last check to make sure it's between 1 and 0
+  private def calculateImpact(iw:ImplementedWork): Impact = {
+    val nextSeverity = impactSeverityPattern.next
+
+    val slackReducesMaxSeverity = Math.min(4, iw.slack.value.toInt) // by up to 4
+    val myMaxSeverity = maxSeverity - slackReducesMaxSeverity
+
+    val mySeverity = Math.min(nextSeverity, myMaxSeverity)
+
+    impact(mySeverity, iw.work)
   }
 
+  def partOfChange(pctBroken: Double)(w: Workable) = w match {
+    case f: Feature => BrokenFeature(f.valueAdd * pctBroken)
+    case p: Problem => ???
+  }
+  def systemwideImpact(pctOutage: Double)(w: Workable) = SystemOutage(pctOutage)
 }
 
 object CodeImpact {

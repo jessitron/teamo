@@ -18,7 +18,7 @@ case class SystemOutage(damage: Double) extends Impact {
   assert(damage <= 1)
   def hurt(before:Worth) = before.outage(damage)
 }
-case class BrokenFeature(valueLost: Value) {
+case class BrokenFeature(valueLost: Value) extends Impact {
   def hurt(before:Worth) = before.break(valueLost)
 }
 
