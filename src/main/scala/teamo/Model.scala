@@ -40,7 +40,7 @@ object ProblemGenerator {
     val impact = calculateImpact(iw)
     val problems =
       for (i <- 1.to(qtyOfProblems(iw.skill, code)))
-        yield new Problem(iw.work.difficulty * (impact * 4), impact)
+        yield Problem(iw.work.difficulty * (impact * 4), impact)
     problems.toSet
   }
 

@@ -14,6 +14,7 @@ class TeaMo(bugTracker: Agent[BugTracker],
 
   var features: List[Feature] = List()
   def codebase = codebaseAgent.get()
+  def problems = bugTracker.get().problems
 
   def receive:Receive= {
     case w:ImplementedWork => integrateWork(w)
@@ -24,7 +25,7 @@ class TeaMo(bugTracker: Agent[BugTracker],
 
   def loginate() {
     logger.loginate(features.size, valueFromFeatures,
-      bugTracker.get().problems.size, impactOfProblems,
+      problems.size, 0, // "impact of problems" no longer supported
       calculateValue)
   }
 
@@ -44,17 +45,12 @@ class TeaMo(bugTracker: Agent[BugTracker],
   }
 
   def valueFromFeatures = features.map(_.valueAdd).sum
-  def impactOfProblems = bugTracker.get().problems.map(_.impact).map(1-_).foldLeft(1.0)(_*_)
   // This should be an integral over time.
   def calculateValue = {
      // this could be a lot more complicated, it should be
      // a fold over each set. But for now, ultra-simple.
-    //println(features.size + " " + features)
-    //println(problems)
     val featureValue = valueFromFeatures
-    val problemMultiplier = impactOfProblems
-    //println(s"$featureValue * $problemMultiplier")
-     featureValue * problemMultiplier
+    problems.map(_.impact).foldRight(featureValue)(_.hurt(_))
   }
 }
 
