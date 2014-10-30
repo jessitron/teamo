@@ -60,13 +60,13 @@ object ProblemGenerator {
   val impactsFromSmallToLarge: Seq[Workable => Impact] =
     Seq(partOfChange(0.25), partOfChange(0.50), partOfChange(1.00),
       systemwideImpact(0.10), systemwideImpact(0.20), systemwideImpact(1.00))
-  val maxSeverity = (impactsFromSmallToLarge.size)
+  val maxSeverity = impactsFromSmallToLarge.size - 1
 
   def impact(severity:Int, w: Workable) = impactsFromSmallToLarge(severity)(w)
 
   // it's not a var, but it's stateful so I mark it that way
   // this is WAY too harsh. It should skew strongly toward the smaller numbers
-  var impactSeverityPattern: Iterator[Int] = Stream.continually(0 until maxSeverity).flatten.iterator
+  var impactSeverityPattern: Iterator[Int] = Stream.continually(0 to maxSeverity).flatten.iterator
 
   private def calculateImpact(iw:ImplementedWork): Impact = {
     val nextSeverity = impactSeverityPattern.next
