@@ -92,6 +92,7 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
   def receive = {
     case Finished =>
       val completedWork = currentTask.head
+      gitMerge(completedWork)
       reapBenefits(completedWork)
                     teamo ! new ImplementedWork(completedWork,culture.slack,skillSet) // Missing: quality level of feature
                     currentTask = currentTask.tail
@@ -99,6 +100,14 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
                     say("finished " + completedWork)
     case t: Workable => currentTask= t::currentTask; rescheduleFinishment(); say("starting " + t)
     case wat => println("Waaaaah " + name + " doesn't know how to " + wat )
+  }
+
+  def gitMerge(completedWork: Workable) {
+    completedWork match {
+      case feature: Feature =>
+        codebase.alter(cb => cb.grow(CodeImpact.increaseInSize(feature.difficulty, culture.slack)))
+      case _ => // fixes don't affect the size... they could affect quality
+    }
   }
 
   def say(msg: String) {

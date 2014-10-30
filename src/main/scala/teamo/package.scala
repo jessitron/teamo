@@ -4,6 +4,7 @@ package object teamo {
 
   type CodeQuality = Double /* between 0 and 1 */
   type Value = Double /* not limited */
+  type CodeSize = Double
 
    val timeRatio:Double = 0.25.second / 1.day
 

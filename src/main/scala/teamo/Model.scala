@@ -34,7 +34,7 @@ object ProblemGenerator {
 
   val defaultAnnoyance = 0.1
 
-  def generate(iw:ImplementedWork):Set[Problem] = {
+  def generate(iw:ImplementedWork, code: Codebase):Set[Problem] = {
     val impact = calculateImpact(iw)
     val problems =
       for (i <- 1.to(qtyOfProblems(iw.slack)))
@@ -55,5 +55,16 @@ object ProblemGenerator {
 
     //println(s"Problem annoyance: $actualAnnoyance  $annoyanceDenominator $slackValueRatio")
     Math.min(Math.max(0,actualAnnoyance),1) //last check to make sure it's between 1 and 0
+  }
+}
+
+object CodeImpact {
+
+  val maxLinesPerMinute = 0.25
+
+  def increaseInSize(featureSize: Difficulty, slack: Slack): CodeSize = {
+    val rushedLOC = featureSize.realExpectedDuration.toUnit(MINUTES) * maxLinesPerMinute
+    val slackHelps = (1 + slack.value)
+    rushedLOC / slackHelps
   }
 }

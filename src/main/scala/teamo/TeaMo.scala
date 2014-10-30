@@ -54,7 +54,7 @@ class TeaMo(bugTracker: Agent[BugTracker],
   def progressionOfEvil(iw:ImplementedWork) {
     //println("progression of evil"+imf)
     iw.work match {
-      case f:Feature =>     bugTracker.alter(ps => ps ++ ProblemGenerator.generate(iw))
+      case f:Feature =>     bugTracker.alter(ps => ps ++ ProblemGenerator.generate(iw, codebase))
       case p:Problem => //we are just avoiding evil
     }
   }
