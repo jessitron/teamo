@@ -24,9 +24,12 @@ class Problem(val difficulty: Difficulty,
 case class Feature(valueAdd: Value, difficulty:Difficulty) extends Workable
 
 // needs to receive codebase agent
-class TeaMo(bugTracker: Agent[BugTracker], logger: ValueLogger = PirateLogger()) extends Actor {
+class TeaMo(bugTracker: Agent[BugTracker],
+  codebaseAgent: Agent[Codebase],
+  logger: ValueLogger = PirateLogger()) extends Actor {
 
   var features: List[Feature] = List()
+  def codebase = codebaseAgent.get()
 
   def receive:Receive= {
     case w:ImplementedWork => integrateWork(w)

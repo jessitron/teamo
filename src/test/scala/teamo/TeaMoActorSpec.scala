@@ -20,16 +20,17 @@ import scala.language.existentials
   val magicalBugTracker = new BugTracker(Set()) {
     override def + (p: Problem) = this // eat problems
   }
+  val dummyCodebase = Codebase()
 
   test("A good programmer adding features increases value" /* (it might not always but now it should) */) {
     forAll { (features: Set[Feature], addlFeature: Feature, slack: Slack, skillSet: SkillSet) =>
       // this could use just one actor system
       val sys = ActorSystem(/* unique name */ "poo")
-      val teamo = sys.actorOf(Props(new TeaMo(Agent(magicalBugTracker))))
+      val teamo = sys.actorOf(Props(new TeaMo(Agent(magicalBugTracker), Agent(dummyCodebase))))
       features.foreach { f =>
         teamo ! TeaMo.ImplementedWork(f, slack, skillSet)
       }
-      
+
       implicit val timeout:Timeout = 5.seconds
       val valueBefore = (teamo ? GetValue).mapTo[TeaMoValue]
       teamo ! ImplementedWork(addlFeature,Slack(2.0),SkillSet(1))

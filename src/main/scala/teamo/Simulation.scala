@@ -1,8 +1,8 @@
 package teamo
 
+import java.util.Date
 import akka.util.Timeout
 import teamo.TeaMo.{TeaMoValue, GetValue}
-import java.util.Date
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -12,8 +12,8 @@ import akka.pattern._
 object Simulation {
 
   def main(args: Array[String]) {
-    val results = run(TeamNature(Culture(Slack(0.0)),
-         1, // members
+    val results = run(TeamNature(Culture(Slack(0.5)),
+         1,
          () => () => Feature(valueAdd = 1, Difficulty(1,1.day))
       ), 180.days)
     println("--------------------------")
@@ -34,7 +34,7 @@ object Simulation {
     val bugTracker = Agent(BugTracker())
 
     /* TEAMO */
-    val teamo = system.actorOf(Props(new TeaMo(bugTracker, output)))
+    val teamo = system.actorOf(Props(new TeaMo(bugTracker, codebase, output)))
 
     /* HIRE */
     val developmentTeam = system.actorOf(Props(new Team(t, teamo, codebase,
@@ -42,7 +42,6 @@ object Simulation {
 
     //val timeKeeper = system.actorOf(Props(new TimeKeeper(d,teamo)))
 
-    say("Letting it run")
     Timing.wait(d)
     //timeKeeper ! Work(0.millis,new Coder,c,d)
     val valueFuture = teamo ? GetValue
