@@ -65,6 +65,7 @@ object ProblemGenerator {
   def impact(severity:Int, w: Workable) = impactsFromSmallToLarge(severity)(w)
 
   // it's not a var, but it's stateful so I mark it that way
+  // this is WAY too harsh. It should skew strongly toward the smaller numbers
   var impactSeverityPattern: Iterator[Int] = Stream.continually(0 until maxSeverity).flatten.iterator
 
   private def calculateImpact(iw:ImplementedWork): Impact = {
