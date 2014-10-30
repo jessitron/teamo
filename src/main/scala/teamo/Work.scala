@@ -18,7 +18,14 @@ case class PercentageImpact(damage: Double) extends Impact {
   assert(damage <= 1)
   def hurt(before:Value) = before * (1-damage)
 }
-
+case class WorstCase(percentage: Double, minimumDamage: Value) extends Impact {
+  def hurt(before:Value) = {
+    val percentPain = before * percentage
+    val greatestPain = Math.max(percentPain, minimumDamage)
+    val after = before - greatestPain
+    Math.min(0, after)
+  }
+}
 
 /* reference equality is important here */
 class Problem(val difficulty: Difficulty,
