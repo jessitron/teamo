@@ -58,9 +58,9 @@ case class SkillSet(
 //  , techs: Map[Tech, SkillLevel]
 ) {
    def addExperience(feature: Workable,
-     slack: Double): SkillSet = {
+     slack: Slack): SkillSet = {
      // here is a function.
-     val codebaseGainRatio = (feature.difficulty.realExpectedDuration.toHours/4) * (0.01 + slack)/100
+     val codebaseGainRatio = (feature.difficulty.realExpectedDuration.toDays) * (0.01 + slack.value)/100
      // Features could also have tech, someday.
      val newFamiliarity = codebaseFamiliarity + (1-codebaseFamiliarity) * codebaseGainRatio
      copy(codebaseFamiliarity = newFamiliarity)
@@ -105,6 +105,8 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
   def gitMerge(completedWork: Workable) {
     completedWork match {
       case feature: Feature =>
+        val lines = CodeImpact.increaseInSize(feature.difficulty, culture.slack)
+        say(s"adding $lines to codebase")
         codebase.alter(cb => cb.grow(CodeImpact.increaseInSize(feature.difficulty, culture.slack)))
       case _ => // fixes don't affect the size... they could affect quality
     }
@@ -115,10 +117,9 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
   }
 
   def reapBenefits(task: Workable) = {
-    skillSet = skillSet.addExperience(task, culture.slack.value)
+    skillSet = skillSet.addExperience(task, culture.slack)
+    say(s"My skills are $skillSet")
   }
-
-  //def onPetProject: Boolean = currentTask.size <= 1
 
   // in this version, there is no % complete. Every task starts over. Not ideal - closer to
   // reality than ignoring cost of context switching and merging though

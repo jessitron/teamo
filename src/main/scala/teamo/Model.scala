@@ -34,17 +34,24 @@ object ProblemGenerator {
 
   val defaultAnnoyance = 0.1
 
+  val typicalFeatureSize: CodeSize = 250.0
+
   def generate(iw:ImplementedWork, code: Codebase):Set[Problem] = {
     val impact = calculateImpact(iw)
     val problems =
-      for (i <- 1.to(qtyOfProblems(iw.slack)))
+      for (i <- 1.to(qtyOfProblems(iw.skill, code)))
         yield new Problem(iw.work.difficulty * (impact * 4), impact)
     problems.toSet
   }
 
-  private def qtyOfProblems(slack: Slack): Int = {
-    1
+  private def qtyOfProblems(skill: SkillSet, code: Codebase ): Int = {
+    val unfamiliarCode = code.size * (1 - skill.codebaseFamiliarity)
+    val createdProblems = unfamiliarCode / (10 * typicalFeatureSize)
+    rangeLimit(createdProblems.toInt, low = 1, high = 5)
   }
+
+  private def rangeLimit(v: Int, low: Int, high: Int) = Math.min(high, Math.max(low, v))
+
   private def calculateImpact(iw:ImplementedWork):Double = {
 
     //so if we don't understand the code, half our slack is useless
