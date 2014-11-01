@@ -27,13 +27,12 @@ object Simulation {
     println(s"That was with slack of $s")
   }
 
-  def run(t: TeamNature, d: FiniteDuration) = {
+  def run(t: TeamNature, d: FiniteDuration,logFile:String = "results.csv") = {
    import ExecutionContext.Implicits.global
     implicit val timeout:Timeout = 3.seconds
     println(s"starting simulation: $t $d ")
     val system = ActorSystem("teamo")
-
-    val output = new FileLogger("results.csv")
+    val output = new FileLogger(logFile)
 
     /* GIT INIT */
     val codebase = Agent(Codebase(1))
