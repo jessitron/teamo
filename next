@@ -1,0 +1,15 @@
+Goal:
+ - add cards for Research (and then Learning)
+ - Step 1: Different techs exist
+   - features have multiple costs, for different techs. At the bottom is "roll your own" which everyone can do. but if you know some tech A, it's faster; tech F, faster still; tech Y, fastest.
+   - teami natures have different ratios of Features to Researches. Research always takes a specific time, and a person learns 1 random tech.
+   - Reseach adds a tech to a team's Knowledge Base.
+   - a team will use the best relevant tech in its Knowledge Base to implement a feature.
+   Therefore teams that do more research will implement more features, long-term.
+
+ - Step 2: cards for learning
+   - now each Problem happens on a particular tech (related to the feature) OR the codebase
+   - how fast a problem can be fixed depends on familiarity with that tech
+   - more problems are created with more familiarity
+   - implementing/fixing increases familiarity (more with slack)
+   - Learning cards build familiarity with tech that's in production. Fixed time, random % increase. Lots more than slack.
