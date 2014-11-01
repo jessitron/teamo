@@ -39,13 +39,13 @@ class TeaMo(bugTracker: Agent[BugTracker],
   def progressionOfEvil(iw:ImplementedWork) {
     //println("progression of evil"+imf)
     iw.work match {
-      case f:Feature =>   withRandomDelay {
+      case f:Feature =>
         val newProblems = ProblemGenerator.generate(iw, codebase)
-        if (newProblems.nonEmpty) {
-          bugTracker.alter(ps => ps ++ newProblems)
-          loginate()
-        }
-      }
+        for (p <- newProblems)
+          withRandomDelay {
+            bugTracker.alter(ps => ps + p)
+            loginate()
+          }
       case p:Problem => //we are just avoiding evil
     }
   }
