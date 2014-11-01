@@ -44,7 +44,7 @@ object ProblemGenerator {
   }
 
   private def chooseDifficulty(iw: ImplementedWork, i: Int) = {
-    val howMuchHarder = Seq(0.125, 0.25, 0.5, 1, 2)(i)
+    val howMuchHarder = Seq(0.125, 0.25, 0.5, 1.0, 2.0)(i-1)
     // ignoring points in difficulty
     iw.work.difficulty * howMuchHarder
   }
