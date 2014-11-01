@@ -39,9 +39,14 @@ class TeaMo(bugTracker: Agent[BugTracker],
   def progressionOfEvil(iw:ImplementedWork) {
     //println("progression of evil"+imf)
     iw.work match {
-      case f:Feature =>     bugTracker.alter(ps => ps ++ ProblemGenerator.generate(iw, codebase))
+      case f:Feature =>   withRandomDelay(  bugTracker.alter(ps => ps ++ ProblemGenerator.generate(iw, codebase)))
       case p:Problem => //we are just avoiding evil
     }
+  }
+
+  def withRandomDelay(stuff: => Unit) {
+    val r = scala.util.Random.nextInt(1000)
+    context.system.scheduler.scheduleOnce(r.millis) { stuff }(scala.concurrent.ExecutionContext.global)
   }
 
   def valueFromFeatures = features.map(_.valueAdd).sum
