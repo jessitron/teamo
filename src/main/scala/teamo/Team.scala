@@ -153,6 +153,6 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
 
 object Coder {
   val nameGen = org.scalacheck.Gen.oneOf("Jamie","Pat","Kim","Alex","Addison","Haim","Subash",
-    "Saron","Paco","Parag","Andrea","Bodil","Francesco","Mario","Chad","Clement","Viktor","Mikayla")
+    "Saron","Paco","Parag","Andrea","Bodil","Francesco","Zoquete","Chad","Clement","Viktor","Mikayla")
 }
 
