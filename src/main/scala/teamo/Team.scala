@@ -106,8 +106,8 @@ class Coder(manager: ActorRef, teamo: ActorRef, codebase: Agent[Codebase], cultu
     completedWork match {
       case feature: Feature =>
         val lines = CodeImpact.increaseInSize(feature.difficulty, culture.slack)
-        say(s"adding $lines to codebase")
         codebase.alter(cb => cb.grow(CodeImpact.increaseInSize(feature.difficulty, culture.slack)))
+        say(s"adding $lines to codebase, new size: ${codebase().size}")
       case _ => // fixes don't affect the size... they could affect quality
     }
   }

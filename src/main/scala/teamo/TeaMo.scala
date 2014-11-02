@@ -26,7 +26,7 @@ class TeaMo(bugTracker: Agent[BugTracker],
   def loginate() {
     logger.loginate(features.size, valueFromFeatures,
       problems.size, 0, // "impact of problems" no longer supported
-      calculateValue)
+      calculateValue,codebase.size)
   }
 
   def integrateWork(iw:ImplementedWork): Unit ={

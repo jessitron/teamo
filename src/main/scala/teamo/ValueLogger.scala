@@ -6,13 +6,13 @@ import java.io.FileWriter
 trait ValueLogger {
   def loginate(featureCount: Int, featuresValue: Value,
                problemCount: Int, problemsValue: Value,
-               overallValue: Value): Unit
+               overallValue: Value,codebaseSize:Double): Unit
 }
 
 case class PirateLogger() extends ValueLogger {
   def loginate(featureCount: Int, featuresValue: Value,
                problemCount: Int, problemsValue: Value,
-               overallValue: Value) {}
+               overallValue: Value,codebaseSize:Double) {}
 }
 
 class FileLogger(filename: String) extends ValueLogger {
@@ -23,10 +23,10 @@ class FileLogger(filename: String) extends ValueLogger {
 
   def loginate(featureCount: Int, featuresValue: Value,
                problemCount: Int, problemsValue: Value,
-               overallValue: Value) {
+               overallValue: Value,codebaseSize:Double) {
 
-      writer.write("%d,%d,%f,%d,%f,%f\n".format(timeSinceStart,featureCount,featuresValue,
-        problemCount, problemsValue, overallValue))
+      writer.write("%d,%d,%f,%d,%f,%f,%f\n".format(timeSinceStart,featureCount,featuresValue,
+        problemCount, problemsValue, overallValue,codebaseSize))
   }
 
   private def timeSinceStart:Long = new Date().getTime - start

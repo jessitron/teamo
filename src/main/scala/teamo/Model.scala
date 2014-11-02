@@ -92,7 +92,7 @@ object CodeImpact {
 
   def increaseInSize(featureSize: Difficulty, slack: Slack): CodeSize = {
     val rushedLOC = featureSize.realExpectedDuration.toUnit(MINUTES) * maxLinesPerMinute
-    val slackHelps = (1 + slack.value)
+    val slackHelps = 1 + slack.value
     rushedLOC / slackHelps
   }
 }
