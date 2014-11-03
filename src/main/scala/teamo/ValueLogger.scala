@@ -18,7 +18,7 @@ case class PirateLogger() extends ValueLogger {
 class FileLogger(filename: String) extends ValueLogger {
 
   val writer = new FileWriter(filename)
-  writer.write("millis, featureCount, featuresVal, problemCount, problemsVal, totalVal\n")
+  writer.write("millis, featureCount, featuresVal, problemCount, problemsVal, totalVal, codeSize\n")
   val start: Long = new Date().getTime
 
   def loginate(featureCount: Int, featuresValue: Value,
@@ -26,7 +26,7 @@ class FileLogger(filename: String) extends ValueLogger {
                overallValue: Value,codebaseSize:Double) {
 
       writer.write("%d,%d,%f,%d,%f,%f,%f\n".format(timeSinceStart,featureCount,featuresValue,
-        problemCount, problemsValue, overallValue,codebaseSize))
+        problemCount, overallValue-featuresValue, overallValue,codebaseSize))
   }
 
   private def timeSinceStart:Long = new Date().getTime - start
